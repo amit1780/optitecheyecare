@@ -1,0 +1,232 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+?>
+<div class="container-fluid">	
+	<div class="page_heading">
+		<h1 style="float: left;"><?php echo $page_heading; ?></h1> <?php echo $this->breadcrumbs->show(); ?>			
+	</div>
+	
+    <?php if(isset($success)){ ?>
+    <div class="alert alert-success">
+      <?php echo $success; ?>
+    </div>
+	<?php } ?>
+	 <!-- DataTables Example -->
+	<style>
+		.auto ul{width:100%;padding-left:6px;}
+		.auto ul{max-height: 200px;overflow-y: scroll};		
+	</style>
+  <div class="card mb-3">	
+	<div class="card-body">		
+		<form role="form" class="needs-validation" id="filterForm" data-toggle="validator" method="get" action="<?php echo site_url($form_action);?>" enctype="multipart/form-data" novalidate>
+			<div class="row">														
+				<div class="col-sm-2 ">
+				  <div class="form-group">
+					<div class="control-label">Customer Id</div> 
+					<input type="text" name="customerid" value="<?php if(!empty($this->input->get('customerid'))){ echo $this->input->get(customerid); } ?>" id="customerid" class="form-control" >
+					
+				  </div>
+				</div>	
+				
+				<div class="col-sm-2 ">
+				  <div class="form-group auto">
+					<div class="control-label">Customer Name</div> 
+					<input type="text" name="company_name" value="<?php if(!empty($this->input->get('company_name'))){ echo $this->input->get('company_name'); } ?>" id="company_name" class="form-control" >
+					
+				  </div>
+				</div>
+				
+				<div class="col-sm-2 ">
+				  <div class="form-group">
+					<div class="control-label">Email</div> 
+					<input type="text" name="email" value="<?php if(!empty($this->input->get('email'))){ echo $this->input->get('email'); } ?>" id="email" class="form-control" >
+					
+				  </div>
+				</div>
+				
+				<div class="col-sm-2 ">
+				  <div class="form-group">
+					<div class="control-label">Mobile</div> 
+					<input type="text" name="mobile" value="<?php if(!empty($this->input->get('mobile'))){ echo $this->input->get('mobile'); } ?>" id="mobile" class="form-control" >
+					
+				  </div>
+				</div>
+				
+			
+				<div class="col-sm-2 ">
+				  <div class="form-group">
+					<div class="control-label" >Country</div> 
+					<?php $country_id = $this->input->get('country_id'); ?>
+					<select name="country_id" id="country_id" class="form-control" onChange="getState(this.value)" >
+						<option value="">-- Seclect --</option>
+						<?php foreach($countries as $country){ ?>
+							<option value="<?php echo $country['country_id']; ?>" <?php if (isset($country_id) && $country_id == $country['country_id']) { echo ' selected="selected"'; } ?> ><?php echo $country['name']; ?></option>
+						<?php } ?>
+					</select>					
+				  </div>
+				</div>
+				
+				<div class="col-sm-2 ">
+				  <div class="form-group">
+					<div class="control-label">State</div> 
+						<select name="state_id" id="state_id" class="form-control" >
+							
+						</select>					
+				  </div>
+				</div>
+				
+				<div class="col-sm-2 ">
+				  <div class="form-group">
+					<div class="control-label">City</div> 
+					<input type="text" name="city" value="<?php if(!empty($this->input->get('city'))){ echo $this->input->get('city'); } ?>" id="city" class="form-control" >
+					
+				  </div>
+				</div>	
+
+				<div class="col-sm-2 ">
+				  <div class="form-group">
+					<div class="control-label">Pin Code</div> 
+					<input type="text" name="pin_code" value="<?php if(!empty($this->input->get('pin_code'))){ echo $this->input->get('pin_code'); } ?>" id="pin_code" class="form-control">
+					
+				  </div>
+				</div>
+				
+				
+				
+				<div class="col-sm-8">
+					<div class="form-group"><br>
+						<button type="button" id="button-filter" class="btn btn-primary float-right">Search</button>
+					</div>
+				</div>
+				
+			</div>	
+		</form>
+	  <div class="table-responsive">
+	<style>
+		table thead th.sort_ASC a:after {
+			content: "▲" !important;
+			color:black !important;
+			font-size: 12px !important;
+			padding: 15px !important;
+		}
+		
+		table thead th.sort_DESC a:after {
+			content: "▼" !important;
+			color:black !important;
+			font-size: 12px !important;
+			padding: 15px !important;
+		}
+
+	</style>
+		<table class="table-sm table-bordered" width="100%" cellspacing="0">
+				  <thead>
+					<tr>
+					  <th style="width:5%;">Customer Id</th>
+					  <th width="15%" <?php if($this->input->get('order') && ($this->input->get('sort') == 'company_name')){ echo 'class=sort_'.$this->input->get('order'); } else { echo ''; } ?> ><a href="<?php echo $company_name_sort; ?>" >Company Name</a></th>
+					  
+					  <th <?php if($this->input->get('order') && ($this->input->get('sort') == 'contact_person')){ echo 'class=sort_'.$this->input->get('order'); } else { echo ''; } ?>><a href="<?php echo $contact_person_sort; ?>" >Contact Person</a></th>
+					  
+					  <th style="width:15%;" <?php if($this->input->get('order') && ($this->input->get('sort') == 'email')){ echo 'class=sort_'.$this->input->get('order'); } else { echo ''; } ?>><a href="<?php echo $email_sort; ?>" >Email</a></th>
+					  
+					  <th style="width:10%;" >Mobile</th>
+					   <!-- <th>Phone</th> -->
+					  <th style="width:10%;" >Country</th>
+					  <!-- <th>State</th>
+					  <th>District</th>
+					  <th>City</th>
+					  <th>Pin</th>	-->			  
+					  <th width="10%" >Action</th>
+					</tr>
+				  </thead>
+				  <tbody>		 
+					<?php if($customers){ ?>
+						<?php foreach($customers as $customer){ ?>
+						
+							  <tr>
+								<td><a target="_blank" href="<?php echo site_url('customerView');?>/<?php echo $customer['customer_id']; ?>"><?php echo $customer['customer_id']; ?></a></td>
+								<td><a target="_blank" href="<?php echo site_url('customerView');?>/<?php echo $customer['customer_id']; ?>"><?php echo $customer['company_name']; ?></a></td>
+								<td><?php echo $customer['person_title']." ".$customer['contact_person']; ?></td>
+								<td><?php echo $customer['email']; ?></td>
+								<td><?php echo $customer['mobile']; ?></td>
+								<!-- <td><?php echo $customer['phone']; ?></td> -->
+								<td><?php echo $customer['country_name']; ?></td>
+								<!-- <td><?php echo $customer['state_name']; ?></td>
+								<td><?php echo $customer['district']; ?></td>
+								<td><?php echo $customer['city']; ?></td>
+								<td><?php echo $customer['pin']; ?></td> -->				
+								
+								<td class="">
+									<a class="tdBtn" target="_blank" href="<?php echo site_url('customerView'); ?>/<?php echo $customer['customer_id']; ?>"  title="View" ><i class="fas fa-eye"></i></a>
+									<a class="tdBtn" target="_blank" href="<?php echo site_url('editCustomer'); ?>/<?php echo $customer['customer_id']; ?>"  title="Edit"><i class="far fa-edit"></i></a>
+									<a class="tdBtn" target="_blank" href="<?php echo site_url('notes'); ?>/<?php echo $customer['customer_id']; ?>"  title="Notes"><i class="far fa-sticky-note"></i></a>
+									<a class="tdBtn" target="_blank" href="<?php echo site_url('priceList'); ?>/<?php echo $customer['customer_id']; ?>"  title="Price List"><i class="fas fa-list"></i></a>
+									<a class="tdBtn" target="_blank" href="<?php echo site_url('customerHistory'); ?>/<?php echo $customer['customer_id']; ?>"  title="Customer History"><i class="fas fa-history"></i></a>
+								</td>
+							  </tr>
+						<?php } ?>  
+					<?php } else { ?>
+							<tr>
+								<td class="text-center" colspan="11">No results!</td>
+							</tr>
+					<?php } ?>  
+				  </tbody>
+			</table>
+	  </div>
+	</div>
+	<?php echo $pagination; ?>
+	<!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
+  </div>
+</div>
+<script>
+    $(document).ready(function () {		
+		$('#company_name').autocomplete({
+			'source': function(request, response) {
+				$.ajax({
+					url:'<?php echo site_url('getCustomerName'); ?>',
+					type: "POST",
+					data: 'name=' + request,  
+					dataType: 'json',
+					success: function(json) {
+						response($.map(json, function(item) {							
+							return {
+								//label: item['company_name']+" # "+item['customer_id'],
+								label: item['company_name'],
+								value: item['customer_id']
+							}
+						}));
+					}
+				});
+			},
+			'select': function(item) {
+				if(item['value']){
+					$('#company_name').val(item['label']);				
+					//$('#customer_id').val(item['value']);					
+				}
+			}
+		});
+		
+    });    
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".form-control").keypress(function(event) { 
+		if (event.keyCode === 13) { 
+			$("#button-filter").click();				
+		} 
+	});
+	
+	$("#button-filter").click(function(){
+		var url = '<?php echo site_url($form_action);?>';		
+		var data_form = $("#filterForm :input")
+				.filter(function(index, element) {
+					return $(element).val() != '';
+				})
+				.serialize();
+		
+		if (data_form) {
+			url += '?' + (data_form);
+		}		
+		location = url; 
+	});
+}); 
+</script> 
