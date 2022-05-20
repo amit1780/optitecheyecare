@@ -309,7 +309,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 			<div class="col-sm-12" style="width:100%;float:left;padding-right: 0px;padding-left: 0px;margin-top:50px;">				
 				<div style="width:100%;float:left;">
-				    <p style="margin: 0px;"><b>Bank remittance charge shall be paid by payer(buyer)</b></p><br>
+				    <p style="margin: 0px;color:red;"><b>Bank remittance charge shall be paid by payer(buyer)</b></p><br>
 					<p style="margin: 0px;float:left;">For Tarun Enterprises</p>
 				</div>									
 			</div>

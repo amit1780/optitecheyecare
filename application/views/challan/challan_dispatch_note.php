@@ -225,24 +225,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="col-sm-6 border_bottom">
-							<p><b style="float:left;width:37%;">SB Number:</b> <input type="text" name="sb_number" value="<?php if($challanInfo->sb_number){ echo $challanInfo->sb_number; } else { echo set_value('sb_number'); } ?>" id="sb_number" autocomplete='off' style="border:1px solid black;"></p>							
+							<p><b style="float:left;width:37%;">SB Number:</b> <input type="text" name="sb_number" value="<?php if($challanInfo->sb_number){ echo $challanInfo->sb_number; } else { echo set_value('sb_number'); } ?>" id="sb_number" autocomplete='off' style="border:1px solid black;"></p>		
+						</div>
+						<div class="col-sm-6 border_right border_bottom">
+							<p><b>Terms of Delivery:</b></p>
+							<p style="margin-bottom: 15px;"><?php echo $ordersInfo->delivery; ?></p>	
+						</div>
+						<div class="col-sm-6 border_bottom">							
+							<p><b style="float:left;width:37%;">E-Way Bill:</b> <input type="text" name="eway_bill" value="<?php if($challanInfo->eway_bill){ echo $challanInfo->eway_bill; } else { echo set_value('eway_bill'); } ?>" id="eway_bill" autocomplete='off' style="border:1px solid black;"></p>		
 						</div>	
 						
 						<div class="col-sm-6 border_right border_bottom">
-							<p><b>Terms of Delivery:</b></p>
-							<p style="margin-bottom: 15px;"><?php echo $ordersInfo->delivery; ?></p>
+							<p><b>Special Information:</b></p>
+							<p style="margin-bottom: 15px;"><?php echo $ordersInfo->special_instruction; ?></p>
 						</div>
 						<div class="col-sm-6 border_bottom">
 							<p><b>Terms of Payments:</b></p>
 							<p style="margin-bottom: 15px;"><textarea name="payment_terms" id="payment_terms" style="border:1px solid black; width:100%;"><?php if($challanInfo->payment_terms){ echo $challanInfo->payment_terms; } else { echo set_value('payment_terms'); }  ?></textarea></p>
 						</div>
 
-						<div class="col-sm-6 border_right border_bottom">
-							<p><b>Special Information:</b></p>
-							<p style="margin-bottom: 15px;"><?php echo $ordersInfo->special_instruction; ?></p>
-						</div>	
+							
 
-						<div class="col-sm-6 border_bottom">
+						<div class="col-sm-12 border_bottom">
 							<p><b>Terms & Conditions:</b></p>
 							<p style="margin-bottom: 15px;"><?php echo $ordersInfo->terms_conditions; ?></p>								
 						</div>	

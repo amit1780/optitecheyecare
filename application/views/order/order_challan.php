@@ -39,7 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<tr class="alert-danger">
 								<td><?php echo $pendingChallanList['description']; ?></td>
 								<td><?php echo $pendingChallanList['qty']; ?></td>
-								<td><b><?php echo ($pendingChallanList['qty'] - $pendingChallanList['challan_qty6']); ?></b></td>
+								<td><b><?php echo ($pendingChallanList['qty'] - $pendingChallanList['challan_qty']); ?></b></td>
 								<td><?php echo $pendingChallanList['unit']; ?></td>
 								<td><?php echo $pendingChallanList['rate']; ?></td>
 								<td><?php echo $pendingChallanList['discount']; ?></td>

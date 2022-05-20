@@ -379,8 +379,12 @@ class Customer_model extends CI_Model {
 		$defaultAddress = $query->row();		
 		
 		$multipleAddress = $this->getAddressByCustomerId($customer_id);		
+		$lastCurrency = $this->getLastQuotationCurrency($customer_id);	
 		$allAddress = array();
-		
+		$currencyID="";
+		if($lastCurrency->currency_id){
+			$currencyID=$lastCurrency->currency_id;
+		}
 		$allAddress[] = array(
 			'customer_id'   		=> $defaultAddress->customer_id,
 			'company_name'   		=> $defaultAddress->company_name,
@@ -397,7 +401,8 @@ class Customer_model extends CI_Model {
 			'district'   			=> $defaultAddress->district,
 			'pin'   				=> $defaultAddress->pin,
 			'pan'   				=> $defaultAddress->pan,
-			'gst'   				=> $defaultAddress->gst
+			'gst'   				=> $defaultAddress->gst,
+			'lastCurrency'   		=> $currencyID
 		);
 		
 		foreach($multipleAddress as $multipleAdd){
@@ -425,7 +430,17 @@ class Customer_model extends CI_Model {
 		return $allAddress;
 	}
 	
-	
+	//To get the currency for the customer of previous quotation
+	private function getLastQuotationCurrency($customer_id){
+		$this->db->select('currency_id')
+            ->from('quote_customer');
+		$this->db->where('customer_id', $customer_id);	
+		$this->db->order_by('id', 'DESC');
+		$this->db->limit(1, 0 );		
+		$query = $this->db->get();
+		return $query->row();
+	}
+
 	public function addNewAddress($data) {	
 		$address_1 = str_replace( ',', '', $data['address_1'] );
 		$address_2 = str_replace( ',', '', $data['address_2'] );

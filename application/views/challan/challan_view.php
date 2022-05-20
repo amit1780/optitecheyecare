@@ -176,25 +176,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
 				<div class="col-sm-6 border_bottom">
 					<p><b style="float:left;width:40%;">SB Number:</b> <?php echo $challanInfo->sb_number; ?></p>							
-				</div>			
+				</div>
+				
+				<div class="col-sm-6 border_right border_bottom">
+					<p><b style="float:left;width:40%;">Terms of Delivery:</b> <?php echo $ordersInfo->delivery; ?></p>
+					
+				</div>
+				
+				<div class="col-sm-6 border_bottom">
+					<p><b style="float:left;width:40%;">E-Way Bill:</b> <?php echo $challanInfo->eway_bill; ?></p>							
+				</div>
 				
 				<div class="col-sm-6 border_right ">
-					<p><b>Terms of Delivery:</b></p>
-					<p style="margin-bottom: 15px;"><?php echo $ordersInfo->delivery; ?></p>
+					<p><b>Special Information:</b></p>
+					<p style="margin-bottom: 15px;"><?php echo $ordersInfo->special_instruction; ?></p>
 				</div>
 				<div class="col-sm-6">
 					<p><b>Terms of Payments:</b></p>
 					<p style="margin-bottom: 15px;"><?php if($challanInfo->payment_terms){ echo $challanInfo->payment_terms; } ?></p>
 				</div>					
 				
-				<div class="col-sm-6 border_top border_right border_bottom">
+				<div class="col-sm-12 border_top border_right border_bottom">
 					<p><b>Terms & Conditions:</b></p>
 					<p style="margin-bottom: 15px;"><?php echo $ordersInfo->terms_conditions; ?></p>
 				</div>
-				<div class="col-sm-6 border_top border_bottom">
-					<p><b>Special Information:</b></p>
-					<p style="margin-bottom: 15px;"><?php echo $ordersInfo->special_instruction; ?></p>
-				</div>
+				
 				
 				<table class="table-sm table-bordered" id="protable" width="100%" cellspacing="0">
 					<tr>

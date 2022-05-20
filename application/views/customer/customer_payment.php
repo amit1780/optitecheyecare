@@ -229,7 +229,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				  <th style="text-align:center;width:20%;">Out</th>
 				  <th style="text-align:center;width:20%;">In </th>
 				  <th style="text-align:right;width:20%;">Balance</th>
-				  <!-- <th style="text-align:right;width:20%;">&nbsp;</th> --> 
+				  <th style="text-align:right;width:20%;">Action</th>
 				</tr>
 			  </thead>		 
 			  <tbody>
@@ -255,7 +255,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<td style="text-align:center;"><?php if($payment['out'] > 0){ ?> <i class="<?php echo $payment['currency_faclass']; ?>"></i> <?php echo number_format((float)($payment['out']), 2, '.', ''); } echo $returnAmount; ?></td>						
 						<td data-placement="bottom" title="<?php echo $payment['bank_name']; ?>" style="text-align:center;"><?php if($payment['in'] > 0){ ?><i class="<?php echo $payment['currency_faclass']; ?>"></i> <?php echo number_format((float)($payment['in']), 2, '.', ''); } ?></td>						
 						<td style="text-align:right;"><?php if($avil > 0){ echo number_format((float)($avil), 2, '.', ''); } ?></td>
-						<!-- <td style="text-align:right;"><a class="tdBtn" target="_blank" href="<?php echo site_url('customer/paymentEdit'); ?>?customer_id=<?php echo $this->input->get('customer_id'); ?>&payment_id=<?php echo $payment['customer_payment_id']; ?>"  title="Edit"><i class="far fa-edit"></i></a></td> -->
+						<td style="text-align:right;"><a class="tdBtn" target="_blank" href="<?php echo site_url('customer/paymentEdit'); ?>?customer_id=<?php echo $this->input->get('customer_id'); ?>&payment_id=<?php echo $payment['customer_payment_id']; ?>"  title="Edit"><i class="far fa-edit"></i></a></td> 
 					</tr>
 				<?php } ?>
 			  </tbody>
@@ -415,10 +415,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								
 							<?php } ?>
 							<?php if($payment['in']){ ?>
-								<!-- <a class="tdBtn" target="_blank" href="<?php echo site_url('customer/paymentEdit'); ?>?customer_id=<?php echo $this->input->get('customer_id'); ?>&payment_id=<?php echo $payment['customer_payment_id']; ?>"  title="Edit"><i class="far fa-edit"></i></a>								
+								<a class="tdBtn" target="_blank" href="<?php echo site_url('customer/paymentEdit'); ?>?customer_id=<?php echo $this->input->get('customer_id'); ?>&payment_id=<?php echo $payment['customer_payment_id']; ?>"  title="Edit"><i class="far fa-edit"></i></a>								
 								 <a class="tdBtn viewFile" href="#" id="<?php echo $payment['customer_payment_id']; ?>" title="View File">
 									<i class="fa fa-file" aria-hidden="true"></i>
-								</a> -->							
+								</a>							
 							<?php } ?>
 							<?php if($payment['mark']){ ?>
 								<a class="tdBtn statusView" id="<?php echo $payment['mark']; ?>" href="#" title="View"><i class="fas fa-eye"></i></a>	
@@ -600,6 +600,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			  mySelect.append(
 				$('<option></option>').val(yearVal).html(yearVal)
 			  );
+		  }
+		  if(startYear<=2019){
+			i=100; // Exit from loop
 		  }
 		  
 		}

@@ -1168,10 +1168,12 @@ function mrpReadonly(){
 							var pan = '';
 							var gst_no = '';
 							var country_id = '';
+							var currency_id = '';
 							$.each(response, function(i,res) {
 								//alert(i);								
 								if(i == 0){
 									country_id = res.country_id;
+									currency_id=res.lastCurrency;
 								}								
 								if(res.pin=='0'){
 									res.pin='';
@@ -1221,6 +1223,13 @@ function mrpReadonly(){
 							$("#billing_details_default").html(htm);
 							$("#shipping_details_default").html(htm);
 							
+							//Assign Default currency of the customer, and make MRP readonly for other users than super admin
+							$("#currency_id").val(currency_id);
+							var group='<?php echo $this->session->userdata('group_type');?>';
+							if( group != 'SADMIN'){
+								mrpReadonly();
+							}	
+
 							$("#pan_no").val(pan);
 							$("#gst").val(gst_no);
 							$("#countryId").val(country_id);

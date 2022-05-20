@@ -730,6 +730,8 @@ class Order extends CI_Controller {
 		$data['order_id'] = $order_id;
 		
 		$data['pendingChallanLists'] = $this->order_model->getPendingChallanList($order_id);		
+		#print "<pre>";
+		#print_r($data['pendingChallanLists']);
 		$data['completeChallanLists'] = $this->order_model->getCompleteChallanList($order_id);		
 		
 		

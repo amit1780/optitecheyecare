@@ -146,7 +146,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div style="width:100%;"><b>Terms of Delivery : </b> <?php echo $ordersInfo->delivery; ?></div>					
 				</div>
 				<div style="float:left; border-left:<?php echo $y; ?>px solid black; padding-left:3px;">
-					<div style="width:100%;"><b>Terms of Payments : </b> <?php echo $challanInfo->payment_terms; ?></div>					
+					<div style="width:100%;"><b>E-Way Bill : </b> <?php echo $challanInfo->eway_bill; ?></div>					
 				</div>
 				
 				<?php
@@ -164,11 +164,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				?>		
 				
 				<div style="width:50%;float:left;border-right:<?php echo $x; ?>px solid black;padding-left:3px;border-top:2px solid black;border-bottom:0px solid black;">
-					<div style="width:100%;"><b>Terms & Conditions : </b> <?php echo $ordersInfo->terms_conditions; ?></div>					
+				<div style="width:100%;"><b>Special Information : </b> <?php echo $ordersInfo->special_instruction; ?></div>					
 				</div>
 				<div style="float:left;padding-left:3px; border-left:<?php echo $y; ?>px solid black; border-top:2px solid black;border-bottom:0px solid black;">
-					<div style="width:100%;"><b>Special Information : </b> <?php echo $ordersInfo->special_instruction; ?></div>					
-				</div>					
+					<div style="width:100%;"><b>Terms of Payments : </b> <?php echo $challanInfo->payment_terms; ?></div>										
+				</div>	
+
+				<div style="float:left;padding-left:3px; border-left:<?php echo $y; ?>px solid black; border-top:2px solid black;border-bottom:0px solid black;">
+				<div style="width:100%;"><b>Terms & Conditions : </b> <?php echo $ordersInfo->terms_conditions; ?></div>										
+				</div>	
+								
 				
 		</div>
 		<div style="border:0px solid black;">
@@ -195,7 +200,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								
 								$mgfDate  = new DateTime($challanProduct['batch_mfg_date']);
 								$expDate = new DateTime($challanProduct['batch_exp_date']);
-								$freight_charge = $challanProduct['freight_charges'];	
+								$freight_charge = $challanProduct['freight_charges'];
+								$returnQuantityHtml='';
+								if(!empty($challanProduct['return_qty'])){
+
+									$returnQuantityHtml="<br><font color='red'><b>(-".$challanProduct['return_qty'].")</b></font>";
+								}	
 						?>						
 							
 							<tr class="prtr">
@@ -203,7 +213,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<td  style="border-bottom:2px solid black;border-right:2px solid black;"><b><?php echo $challanProduct['model_name']; ?></b> | <?php echo $challanProduct['pro_des']; ?></td>
 								<td align="center" style="border-bottom:2px solid black;border-right:2px solid black;"><?php echo $challanProduct['pro_hsn']; ?><?php if(($ordersInfo->currency == 'INR') && ($customerInfo->country_id == '99')){ echo '<br>'.$challanProduct['product_gst']; ?> %<?php } ?></td>
 								<td align="center" style="border-bottom:2px solid black;border-right:2px solid black;"><?php echo $challanProduct['pro_unit']; ?></td>
-								<td align="center" style="border-bottom:2px solid black;border-right:2px solid black;"><?php echo $challanProduct['qty']; ?></td>
+								<td align="center" style="border-bottom:2px solid black;border-right:2px solid black;"><?php echo $challanProduct['qty']; echo $returnQuantityHtml; ?></td>
 								<td align="center" style="border-bottom:2px solid black;border-right:2px solid black;"><?php echo round((float)$challanProduct['rate'], 2); //number_format((float)$challanProduct['rate'], 4, '.', ''); ?></td>
 								<td align="center" style="border-bottom:2px solid black;border-right:2px solid black;">
 								<?php 

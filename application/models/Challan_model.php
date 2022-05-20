@@ -890,6 +890,7 @@ class Challan_model extends CI_Model {
 			'date_of_shipment' 			=> $data['date_of_shipment'],
 			'docket_no'   				=> $data['docket_no'],
 			'sb_number'   				=> $data['sb_number'],
+			'eway_bill'   				=> $data['eway_bill'],
 			'payment_terms'   			=> $data['payment_terms'],
 			'invoice_no'				=> $data['invoice_no'],
 			'invoice_date'   			=> $data['invoice_date']

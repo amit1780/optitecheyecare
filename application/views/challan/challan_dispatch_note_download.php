@@ -138,6 +138,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div style="width:50.4%;float:left;border-right:<?php echo $x; ?>px solid black;padding-left:3px;border-bottom: 2px solid black;">
 					<div style="width:100%;"><b>Terms of Delivery : </b> <?php echo $ordersInfo->delivery; ?></div>					
 				</div>
+
+				<div style="float:left;border-bottom: 2px solid black;padding-left:3px;">
+					<div style="width:40%;float:left;border-right: 1px solid gray;"><b >E-Way Bill:</b> </div> <div style="float:left;padding-left:5px;">  <?php echo $challanInfo->eway_bill; ?></div>
+				</div>
+				<div style="width:50.4%;float:left;border-right:<?php echo $x; ?>px solid black;padding-left:3px;border-bottom: 2px solid black;">
+					<div style="width:100%;"><b>Special Information : </b> <?php echo $ordersInfo->special_instruction; ?></div>
+				</div>
 				<div style="float:left;padding-left:3px;border-bottom: 2px solid black;border-left:<?php echo $y; ?>px solid black;">
 					<div style="width:100%;"><b>Terms of Payments : </b> <?php if($challanInfo->payment_terms){ echo $challanInfo->payment_terms; }  ?></div>					
 				</div>
@@ -158,9 +165,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				?>		
 				
 				
-				<div style="width:50.4%;float:left;border-right:<?php echo $x; ?>px solid black;padding-left:3px;border-bottom: 2px solid black;">
-					<div style="width:100%;"><b>Special Information : </b> <?php echo $ordersInfo->special_instruction; ?></div>
-				</div>
+				
 				
 				<div style="float:left;padding-left:3px;border-bottom: 2px solid black;border-left:<?php echo $y; ?>px solid black;">
 					<div style="width:100%;"><b>Terms & Conditions : </b> <?php echo $ordersInfo->terms_conditions; ?></div>										
