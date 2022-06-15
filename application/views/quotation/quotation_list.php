@@ -291,16 +291,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<td><i class="<?php echo $quotation['currency_faclass']; ?>" style="font-size:13px;"></i>&nbsp;<?php echo number_format((float)$quotation['net_amount'], 2, '.', ''); ?> </td>
 						
 						<td class="">
+							
 							<?php if($quotation['is_deleted'] == 'N'){ ?>
 								<a style="padding-left:7px;" href="<?php echo site_url('quotationView'); ?>/<?php echo $quotation['id']; ?>" title="View" ><i class="fas fa-eye"></i></a>
 								<?php if(empty($quotation['order_id'])) { ?>
-								<a style="padding-left:7px;" href="<?php echo site_url('editQuotation'); ?>/<?php echo $quotation['id']; ?>" title="Edit"><i class="far fa-edit"></i></a>
+								<a style="padding-left:7px;" href="<?php echo site_url('editQuotation'); ?>/<?php echo $quotation['id']; ?>" title="Edit"><i class="fas fa-edit"></i></a>
 								<a style="padding-left:7px;" href="<?php echo site_url('order'); ?>?quotation_id=<?php echo $quotation['id']; ?>"  title="Generate Order"> <i class="fas fa-plus"></i></a>
 								<?php } ?>
 								<a style="padding-left:7px;" href="#" class="mailbox" id="<?php echo $quotation['id']; ?>" title="Email"><i class="fas fa-envelope"></i></a>
 								<a style="padding-left:7px;" href="<?php echo site_url('quotation/downloadPdf'); ?>?quotation_id=<?php echo $quotation['id']; ?>" title="Download"> <i class="fas fa-download"></i></a>
 								<a style="padding-left:7px;" target="_blank" href="<?php echo site_url('quotation/quotePrint'); ?>?quotation_id=<?php echo $quotation['id']; ?>" title="Print"> <i class="fas fa-print"></i></a>
-								<a style="padding-left:7px;" href="#" class="commonMailbox" id="qid_<?php echo $quotation['id']; ?>" title="Email"><i class="fas fa-envelope text-danger"></i></a>
+								<a style="padding-left:7px;" href="#" class="commonMailbox" id="qid_<?php echo $quotation['id']; ?>" title="Email"><i class="fas fa-envelope text-danger"></i></a>							
+								<a style="padding-left:7px;" href="#" class="whatsAppMessageBox" id="waqid_<?php echo $quotation['id']; ?>" title="WhatsApp">
+									<?php 
+										if($quotation['wa_status']=='P'){
+											echo"<i class='fab fa-whatsapp-square text-warning'></i>";
+										}elseif($quotation['wa_status']=='I'){
+											echo"<i class='fab fa-whatsapp-square text-danger'></i>";
+										}elseif($quotation['wa_status']=='C'){
+											echo"<i class='fab fa-whatsapp-square text-success'></i>";
+										}										
+									?>
+								</a>
 								
 								<!-- <a style="padding-left:7px;" href="#" onClick="deleteQuotation(<?php echo $quotation['id']; ?>);" title="Delete Quotation"><i class="fa fa-trash" aria-hidden="true"></i></a> -->
 							<?php } else { ?>
@@ -393,6 +405,50 @@ Optitech Eye Care</textarea>
 				</form>
 			</div>
 		</div>				  
+	</div>
+</div>
+<div class="modal fade" id="myModalSendWhatsApp" role="dialog">
+	<div class="modal-dialog" >
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Send WhatsApp</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>			
+			</div>
+			<div id="alert-danger-common"></div>
+			<div class="modal-body">
+				<form method="post" action="" id="whatsapp_form" enctype="multipart/form-data" >
+					<div class="form-group">
+						<div class="row">						
+							<div class="col-sm-2">Message:</div>															
+							<div class="col-sm-10">
+								<textarea class="form-control" style="height:180px !important;" rows="7" name="wa_message" id="wa_message"></textarea>
+							</div>
+						</div>						
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+																				
+							<div class="form-check">
+								<label class="form-check-label">
+									<input type="checkbox" name="pdf_check" class="form-check-input" value="1">Check to send Quotation along with message in pdf format.
+								</label>
+							</div>
+						</div>									
+					</div>
+					<div>
+						<input type="hidden" name="quotation_id" id="quotation_id" >
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">									
+								<button type="button" id="whatsapp_message" class="btn btn-primary float-right"> Send WhatsApp</button>	
+							</div>
+						</div>						
+					</div>	
+				</form>
+			</div>
+		</div>		
 	</div>
 </div>
 
@@ -530,6 +586,12 @@ Optitech Eye Care</textarea>
 			todayHighlight: true,
 			autoclose: true,
 		});
+		$(".whatsAppMessageBox").click(function(){
+			var id = this.id.split("_");
+			var quotation_id = id[1];
+			$("#quotation_id").val(quotation_id);
+			$("#myModalSendWhatsApp").modal();			
+		});
 
 		$(".commonMailbox").click(function(){
 			//var id = this.id;
@@ -566,6 +628,37 @@ Optitech Eye Care</textarea>
 				}
 			});				
 		});
+		$("#whatsapp_message").click(function(){
+			var data_form = $('#whatsapp_form').serialize();
+			//console.log(data_form);
+			var formData = new FormData($('#whatsapp_form')[0]);
+			$.ajax({
+				url:'<?php echo site_url('common/sendWhatsApp'); ?>',
+				type: 'POST',
+			    data: formData,
+				async: false,
+				cache: false,
+				contentType: false,
+				enctype: 'multipart/form-data',
+				processData: false,
+				beforeSend: function(){
+					   $("#whatsapp_message").prop('disabled', true);
+					   $("#whatsapp_message").attr('disabled', true);
+				},
+				complete: function(){
+					  $("#whatsapp_message").prop('disabled', false);
+				},
+				success: function(response){
+					$("#alert-danger-common").html('');
+					var htm = '<div class="alert alert-success" role="alert">Message Sent Successfully.</div>';
+					$("#alert-danger-common").html(htm);
+					setTimeout(function(){
+						$("#myModalSendWhatsApp .close").click();
+						$("#alert-danger-common").html('');
+					}, 3000);
+				}
+			});
+		});
 
 		$("#common_sendMail").click(function(){		
 			var data_form = $('#common_email_form').serialize();
@@ -589,7 +682,7 @@ Optitech Eye Care</textarea>
 				},
 				success: function(response){
 					$("#alert-danger-common").html('');
-					var htm = '<div class="alert alert-success" role="alert">Successfully Mail Send.</div>';
+					var htm = '<div class="alert alert-success" role="alert">Email Send Successfully.</div>';
 					$("#alert-danger-common").html(htm);
 					setTimeout(function(){
 						$("#myModalSendCommonMail .close").click();
@@ -789,7 +882,7 @@ Optitech Eye Care</textarea>
 $(document).ready(function(){
 	$(".form-control").keypress(function(event) { 
 		if (event.keyCode === 13) { 
-			if(this.id!='email_massage' && this.id!='email_subject' && this.id!='email_cc' && this.id!='email_to' && this.id!='common_email_massage' && this.id!='common_email_subject' && this.id!='common_email_cc' && this.id!='common_email_to'){
+			if(this.id!='email_massage' && this.id!='email_subject' && this.id!='email_cc' && this.id!='email_to' && this.id!='common_email_massage' && this.id!='common_email_subject' && this.id!='common_email_cc' && this.id!='common_email_to' && this.id!='wa_message'){
 				$("#button-filter").click();				
 			}		
 		} 

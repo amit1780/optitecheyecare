@@ -12,6 +12,25 @@ class Quotation_model extends CI_Model {
 		
 	}
 	
+	public function getCustomerByQuotationId($quotation_id) {		
+		
+		$this->db->select('qc.customer_id');
+		$this->db->select('qc.quot_pdf_id');
+		$this->db->select('c.mobile,co.code,c.wa_status');
+		$this->db->from('quote_customer qc ');
+
+		$this->db->join('customer c', 'c.customer_id = qc.customer_id', 'left');
+		$this->db->join('country co', 'co.country_id = c.country_id', 'left');
+
+		$this->db->where('qc.id', $quotation_id);
+					
+		$query = $this->db->get();
+		//echo $this->db->last_query();exit;
+		//print_r($query->result_array());exit;
+		return $query->row();
+		#return $query->result_array();
+	}
+	
 	public function addCustomerToQuote($data,$customerInfo) {
 		
 		$quote_customer_data = array(
@@ -41,6 +60,7 @@ class Quotation_model extends CI_Model {
 			'is_sample' 				=> $data['is_sample'],			
 			'created_by' 				=> $this->session->userdata('user_id'),			
 			'valid_for' 				=> $data['valid_for'],			
+			'quot_pdf_id' 				=> md5($customerInfo->customer_id.uniqid()),			
 			'created_time' 				=> date('Y-m-j H:i:s')		
 		);
 

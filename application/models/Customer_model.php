@@ -261,6 +261,7 @@ class Customer_model extends CI_Model {
 		
 		$this->db->select('*')
             ->from('country');
+			$this->db->order_by('name', 'ASC');
 			$query = $this->db->get();
 			
 		return $query->result_array();

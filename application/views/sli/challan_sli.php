@@ -103,6 +103,18 @@ textarea{border: 1px solid gray;}
 					</div>	
 				</div>
 				
+			<?php }else if($sli_id == 9){ ?>
+				<?php echo  $this->load->view('sli/ups_form', $data,true); ?>
+				
+				<div class="row">
+					<div class="col-sm-12">	
+						<a target="_blank" href="<?php echo site_url('sli/printSli');?>?challan_id=<?php echo $challan_id; ?>&sli_id=<?php echo $sli_id; ?>" class="btn btn-primary float-right" style="margin-left:10px;">Print Sli</a>
+						<?php if($challanInfo->sli_status == 'N'){ ?>
+							<button type="submit" class="btn btn-primary float-right" style="margin-left:10px;">Save</button>
+						<?php } ?>																	  
+					</div>	
+				</div>
+				
 			<?php } else { ?>
 				<p style="margin:0px;font-weight:550;"> Sli not implemented <?php echo $challanInfo->sli_name; ?>. </p>
 			<?php } ?>

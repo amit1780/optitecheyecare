@@ -43,6 +43,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			background-color: #f8d7da;
 			border-color: #f5c6cb;
 		}
+		.dropdown-menu { 
+			max-height: 280px; 
+			overflow-y: auto; 
+			min-width: 100% !important;
+			background-attachment: local, local, scroll, scroll;
+		}
+
+		.dropdown-item { white-space: normal; }
+		
+		
 	</style>
 	<?php if (!empty($unique_mess)) : ?>
 		<div class="col-md-12" id="masserror">
@@ -167,7 +177,7 @@ $(document).ready(function() {
 							
 						  </div>
 						</div>	
-						
+						<!--
 						<div class="col-sm-4">
 						  <div class="form-group">
 							<div class="control-label">Mobile</div> 
@@ -175,15 +185,36 @@ $(document).ready(function() {
 							
 						  </div>
 						</div>	
+									-->
+						<div class="col-sm-6">
+						  <div class="form-group">
+							<div class="control-label">WhatsApp  (enter exactly 10 digits)</div>
+							<div class="input-group">
+								<div class="input-group-prepend dropdown">
+									
+									<button class="btn btn-outline-secondary dropdown-toggle mobile_country_text" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select Country</button>
+									
+									<div class="dropdown-menu" >
+									<?php foreach($countries as $country) { ?>
+									  <a class="mobile_country" id="<?php echo $country['country_id'];?>" href="#"><?php echo $country['name']; ?></a></br>
+									<?php } ?>								  									 
+									</div>
+								 </div>
+							
+								 <input type="text"  name="mobile" maxlength="10" title="Please enter exactly 10 digits"  value="<?php if($customer->mobile) { echo $customer->mobile; } else { echo set_value('mobile'); } ?>" id="mobile" class="form-control input-class-int" >
+   							
+							</div>
+						  </div>
+						</div>
 						
-						<div class="col-sm-4">
+						<div class="col-sm-3">
 						  <div class="form-group">
 							<div class="control-label">Phone</div> 
 							<input type="text" name="phone" value="<?php if($customer->phone) { echo $customer->phone; } else { echo set_value('phone'); } ?>" id="phone" class="form-control" >
 							
 						  </div>
 						</div>								
-						<div class="col-sm-4">
+						<div class="col-sm-3">
 						  <div class="form-group">
 							<div class="control-label">Fax</div> 
 							<input type="text" name="fax" value="<?php if($customer->fax) { echo $customer->fax; } else { echo set_value('fax'); } ?>" id="fax" class="form-control" >
@@ -225,17 +256,16 @@ $(document).ready(function() {
 						
 						
 						<div class="col-sm-3">
-						  <div class="form-group">
-							<div class="control-label">Country</div> 
+						  	<div class="form-group">
+								<div class="control-label">Country</div> 
 								<select name="country_id" id="country_id" class="form-control" onChange="getState(this.value)" required>
 									<option value="">-- Seclect --</option>
 									<?php foreach($countries as $country){ ?>
 										<?php $country_id = $customer->country_id; ?>
 										<option value="<?php echo $country['country_id']; ?>" <?php if (isset($country_id) && $country_id == $country['country_id']) { echo ' selected="selected"'; } else { echo set_select('country_id', $country['country_id']); } ?> ><?php echo $country['name']; ?></option>										
 									<?php } ?>
-								</select>
-								
-						  </div>
+								</select>								
+						  	</div>
 						</div>
 						
 						<div class="col-sm-3">
@@ -432,9 +462,17 @@ $(document).ready(function() {
 		} else {			
 			$(".title-text").html('Dr');
 			$("#person_title").val('Dr');
-		}	    
+		}	
+		
+		$(document).on("keyup", ".input-class-int" , function() {
+			this.value = this.value.replace(/[^0-9]/g, '');
+		});
 	    
 		var country_id = $("#country_id").val();
+		var country=$( "#country_id option:selected" ).text();
+		$(".mobile_country_text").html(country);
+		
+		
 		var state_id = '<?php echo $customer->state_id; ?>';
 		$.ajax({
 			url:'<?php echo site_url('ajaxGetSatetByCountryId'); ?>',
@@ -546,10 +584,23 @@ $(document).ready(function() {
 			$(".title-text").html(title);
 			$("#person_title").val(title);
 		});	
-		
+		$(".mobile_country").click(function(){
+			var y=this.id;
+			var title = $(this).text();
+			$(".mobile_country_text").html(title);
+			$("#country_id").val(y);
+			getState(this.id);
+
+		});	
+		$("#country_id").on('change',function(){
+			var title=$( "#country_id option:selected" ).text();
+			$(".mobile_country_text").html( title);		
+			
+		});
 	});
 </script>
 <script>
+	
 	function addUniqueCustomer(){
 		var base_url = '<?php echo site_url('customer'); ?>';
 		var checkstr =  confirm('Are you sure you want to Create');
