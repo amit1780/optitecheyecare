@@ -288,7 +288,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				  <thead>
 					<tr>
 					  <th style="width:9%;">Order No</th>
-					  <th style="width:9%;">Quotation No</th>
+					  	<?php if(!empty($model)){ ?>
+							<th style="width:9%;">Pending Qty.</th>
+						<?php }else{ ?>
+					  		<th style="width:9%;">Quotation No</th>
+					  	<?php } ?>
 
 					  <th style="width:8%;">Order Date</th>
 					 
@@ -308,12 +312,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					 </tr>
 				  </thead>
 			  <tbody>
-				<?php if(($orders)){ ?>				
-					<?php foreach($orders as $order){ ?>	
+				<?php $ci=& get_instance(); if(($orders)){ ?>				
+					<?php foreach($orders as $order){
+						
+						$pendingQty='';
+						if(!empty($model)){
+							$condition=Array();
+							$condition['order_id']=$order['order_id'];
+							$condition['product_id']=$model;
+							$orderedQty=$this->db->get_where('order_products',array('prod_id'=>$model,'order_id'=>$order['order_id']))->row()->qty;		
+							$challanQuantity=$ci->order_model->getChallanQtybyOrderAndModel($condition);
+
+							$pendingQty=$orderedQty-$challanQuantity->total_challan_qty;
+						}
+						?>	
 					
 						<tr class="<?php if($order['totalOrderProduct'] > 0){ echo "alert-danger";} ?>">
 							<td><a target="_blank" href="<?php echo site_url('orderView'); ?>/<?php echo $order['order_id']; ?>"> <?php echo getOrderNo($order['order_id']); ?></a></td>
-							<td><a target="_blank" href="<?php echo site_url('quotationView'); ?>/<?php echo $order['quotation_id']; ?>"><?php echo getQuotationNo($order['quotation_id']); ?></a></td>
+							<td>
+								<?php if(!empty($model)){ 
+									echo "<b>".$pendingQty."</b>";	
+								}else{ ?>
+									<a target="_blank" href="<?php echo site_url('quotationView'); ?>/<?php echo $order['quotation_id']; ?>"><?php echo $orderedQty-$challanQuantity; echo getQuotationNo($order['quotation_id']); ?></a>
+								<?php } ?>
+							</td>
 							<td><?php echo dateFormat('d-m-Y',$order['order_date']); ?></td>	
 							<td><a target="_blank" href="<?php echo site_url('customerView');?>/<?php echo $order['customer_id']; ?>"><?php echo $order['customer_name']; ?></a></td>
 							<td><?php echo $order['customer_id']; ?></td>

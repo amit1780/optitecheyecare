@@ -913,4 +913,17 @@ class Order_model extends CI_Model {
 		return true;
 	}
 	
+	public function getChallanQtybyOrderAndModel($condition) {
+		$this->db->select('IFNULL(sum(cp.qty), 0) as total_challan_qty')
+            ->from('challan_product cp');		
+		#$array = array('payment_advice_id' => $advice_id);	
+		$this->db->join('challan c', 'cp.challan_id = c.challan_id', 'left');			
+		$this->db->where('cp.order_id',$condition['order_id']);
+		$this->db->where('cp.product_id',$condition['product_id']);
+		$this->db->where('c.is_deleted="N"');
+		$query = $this->db->get();
+		#print $this->db->last_query();exit;
+		return $query->row();
+	}
+	
 }

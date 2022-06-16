@@ -296,7 +296,7 @@ class Order extends CI_Controller {
 		}		
 		
 		
-		
+		$data['model']=$this->input->get('model');
 		$this->load->view('common/header');
 		$this->load->view('order/order_list', $data);
 		$this->load->view('common/footer');
