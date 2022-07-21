@@ -376,6 +376,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<?php if($challan['challan_type'] == "Export"){ ?>
 								<a style="padding-left:7px;" href="<?php echo site_url('challan/invoice'); ?>?challan_id=<?php echo $challan['challan_id']; ?>"  title="Invoice" ><i class="fas fa-file-invoice"></i></a>
 							<?php } ?>
+								<a style="padding-left:7px;" href="#" class="whatsAppMessageBox" id="waqid_<?php echo $challan['challan_id']; ?>" title="WhatsApp">
+									<?php 
+										if($challan['wa_status']=='P'){
+											echo"<i class='fab fa-whatsapp-square text-warning'></i>";
+										}elseif($challan['wa_status']=='I'){
+											echo"<i class='fab fa-whatsapp-square text-danger'></i>";
+										}elseif($challan['wa_status']=='C'){
+											echo"<i class='fab fa-whatsapp-square text-success'></i>";
+										}										
+									?>
+								</a>
 						</td>
 					</tr>
 				<?php } ?>  
@@ -457,6 +468,50 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>
 
+<div class="modal fade" id="myModalSendWhatsApp" role="dialog">
+	<div class="modal-dialog" >
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Send WhatsApp</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>			
+			</div>
+			<div id="alert-danger-common"></div>
+			<div class="modal-body">
+				<form method="post" action="" id="whatsapp_form" enctype="multipart/form-data" >
+					<div class="form-group">
+						<div class="row">						
+							<div class="col-sm-2">Message:</div>															
+							<div class="col-sm-10">
+								<textarea class="form-control" style="height:180px !important;" rows="7" name="wa_message" id="wa_message"></textarea>
+							</div>
+						</div>						
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+																				
+							<div class="form-check">
+								<label class="form-check-label">
+									<input type="checkbox" name="pdf_check" class="form-check-input" value="1">Check to send Challan along with message in pdf format.
+								</label>
+							</div>
+						</div>									
+					</div>
+					<div>
+						<input type="hidden" name="wa_challan_id" id="wa_challan_id" >
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">									
+								<button type="button" id="whatsapp_message" class="btn btn-primary float-right"> Send WhatsApp</button>	
+							</div>
+						</div>						
+					</div>	
+				</form>
+			</div>
+		</div>		
+	</div>
+</div>
 
 <div class="modal fade" id="myModaldel" role="dialog">
 	<div class="modal-dialog" >				
@@ -569,6 +624,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}, 3000);
 				}
 			});				
+		});
+
+		$(".whatsAppMessageBox").click(function(){
+			var id = this.id.split("_");
+			var wa_challan_id = id[1];
+			$("#wa_challan_id").val(wa_challan_id);
+			$("#myModalSendWhatsApp").modal();			
+		});
+
+		$("#whatsapp_message").click(function(){
+			var data_form = $('#whatsapp_form').serialize();
+			//console.log(data_form);
+			var formData = new FormData($('#whatsapp_form')[0]);
+			$.ajax({
+				url:'<?php echo site_url('common/sendWhatsAppChallan'); ?>',
+				type: 'POST',
+			    data: formData,
+				async: false,
+				cache: false,
+				contentType: false,
+				enctype: 'multipart/form-data',
+				processData: false,
+				beforeSend: function(){
+					   $("#whatsapp_message").prop('disabled', true);
+					   $("#whatsapp_message").attr('disabled', true);
+				},
+				complete: function(){
+					  $("#whatsapp_message").prop('disabled', false);
+				},
+				success: function(response){
+					$("#alert-danger-common").html('');
+					var htm = '<div class="alert alert-success" role="alert">Message Sent Successfully.</div>';
+					$("#alert-danger-common").html(htm);
+					setTimeout(function(){
+						$("#myModalSendWhatsApp .close").click();
+						$("#alert-danger-common").html('');
+					}, 3000);
+				}
+			});
 		});
 		
 		// Get Customer name autocomplete

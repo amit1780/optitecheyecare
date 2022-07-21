@@ -5,6 +5,7 @@ class Common extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 		$this->load->library(array('session'));
+		$this->load->model('customer_model');
 		$this->load->model('common_model');
 		$this->load->model('order_model');
 		$this->load->model('quotation_model');
@@ -85,16 +86,15 @@ class Common extends CI_Controller {
 			print json_encode($json);
 		}
     }
+	
 	public function sendWhatsApp(){
-		
-		
 		$instance= $this->config->item('WhatsappInstanceID');
 		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
 		$message =trim($this->input->post('wa_message'));
 		$message=urlencode($message);
 		$quotation_id = $this->input->post('quotation_id');
 		
-		#$instance='627a19f3f9e0425ac1e33ab6';
+		
 		$data=Array();		
 		$customerInfo = $this->quotation_model->getCustomerByQuotationId($quotation_id);
 		
@@ -125,13 +125,240 @@ class Common extends CI_Controller {
 			#print_r($curlJson['data']);*/
 		}
 
-		//https://enotify.app/api/sendText?token=627a19f3f9e0425ac1e33ab6&phone=919451738701&message=aaa
+		//https://enotify.app/api/sendText?token=<token>&phone=<phone>&message=aaa
 		 
 		if(!empty($this->input->post('pdf_check'))){
 			if($this->input->post('pdf_check')==1){
 				$attachmentUrl=site_url('attachements').'/downloadQuotation/'.$uid;
 				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
 				#echo $urlpdf;
+				$this->curl->create($urlpdf);				
+				#$dataCurl = $this->curl->execute();
+			}
+		}
+	}
+
+	public function sendWhatsAppOrder(){
+		$instance= $this->config->item('WhatsappInstanceID');
+		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
+		$message =trim($this->input->post('wa_message'));
+		$message=urlencode($message);
+		$order_id = $this->input->post('wa_order_id');
+		
+		
+		$data=Array();		
+		$customerInfo = $this->order_model->getCustomerByOrderId($order_id);
+		
+		$uid=$customerInfo->order_pdf_id;
+		#$customerInfo->code='91';
+		#$customerInfo->mobile='9451738701';
+		$number=$customerInfo->code.$customerInfo->mobile;
+		$number = preg_replace( '/\D+/is', '', $number);
+
+		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
+		echo $url;
+		$this->curl->create($url);
+		#$curlResponse = $this->curl->execute();
+
+		//Hardcoded for testing need to remove.
+		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
+
+		if($customerInfo->wa_status =='P'){
+			/*$curlJson=json_decode($curlResponse);
+			$messageId=$curlJson->data->messageIDs[0];
+
+			$messageId='6299e54f758e0a8ab4e3d52c';
+			$url=$whatsappApiUrl."campaignStatus?token=".$instance."&msg_id=".$messageId;
+			$this->curl->create($url);
+			$curlResponse = $this->curl->execute();
+			print($curlResponse);
+			//print($curlJson->data->messageIDs[0]);
+			#print_r($curlJson['data']);*/
+		}
+
+		//https://enotify.app/api/sendText?token=<>&phone=<>&message=aaa
+		 
+		if(!empty($this->input->post('pdf_check'))){
+			if($this->input->post('pdf_check')==1){
+				$attachmentUrl=site_url('attachements').'/downloadOrder/'.$uid;
+				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
+				echo $urlpdf;
+				$this->curl->create($urlpdf);				
+				#$dataCurl = $this->curl->execute();
+			}
+		}
+	}
+
+	public function sendWhatsAppChallan(){
+		$instance= $this->config->item('WhatsappInstanceID');
+		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
+		$message =trim($this->input->post('wa_message'));
+		$message=urlencode($message);
+		$challan_id = $this->input->post('wa_challan_id');
+		
+		
+		$order_id = $this->db->get_where('challan', array('challan_id' => $challan_id))->row()->order_id;
+		$data=Array();		
+		$customerInfo = $this->order_model->getCustomerByOrderId($order_id);
+		
+		$uid=$this->db->get_where('challan', array('challan_id' => $challan_id))->row()->challan_pdf_id;;
+		#$customerInfo->code='91';
+		#$customerInfo->mobile='9451738701';
+		$number=$customerInfo->code.$customerInfo->mobile;
+		$number = preg_replace( '/\D+/is', '', $number);
+
+		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
+		echo $url;
+		$this->curl->create($url);
+		#$curlResponse = $this->curl->execute();
+
+		//Hardcoded for testing need to remove.
+		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
+
+		if($customerInfo->wa_status =='P'){
+			/*$curlJson=json_decode($curlResponse);
+			$messageId=$curlJson->data->messageIDs[0];
+
+			$messageId='6299e54f758e0a8ab4e3d52c';
+			$url=$whatsappApiUrl."campaignStatus?token=".$instance."&msg_id=".$messageId;
+			$this->curl->create($url);
+			$curlResponse = $this->curl->execute();
+			print($curlResponse);
+			//print($curlJson->data->messageIDs[0]);
+			#print_r($curlJson['data']);*/
+		}
+
+		//https://enotify.app/api/sendText?token=<>&phone=<>&message=aaa
+		 
+		if(!empty($this->input->post('pdf_check'))){
+			if($this->input->post('pdf_check')==1){
+				$attachmentUrl=site_url('attachements').'/downloadChallan/'.$uid;
+				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
+				echo $urlpdf;
+				$this->curl->create($urlpdf);				
+				#$dataCurl = $this->curl->execute();
+			}
+		}
+	}
+
+	public function sendWhatsAppCustomer(){
+		$instance= $this->config->item('WhatsappInstanceID');
+		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
+		$message =trim($this->input->post('wa_message'));
+		$message=urlencode($message);
+		$customer_id = $this->input->post('wa_customer_id');
+		
+		
+		$data=Array();		
+		$customerInfo = $this->customer_model->getCustomerById($customer_id);
+		
+		#$customerInfo->mobile='9919113035';
+		$number=$customerInfo->code.$customerInfo->mobile;
+		$number = preg_replace( '/\D+/is', '', $number);
+
+		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
+		echo $url;
+		$this->curl->create($url);
+		#$curlResponse = $this->curl->execute();
+
+		//Hardcoded for testing need to remove.
+		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
+
+		if($customerInfo->wa_status =='P'){
+			/*$curlJson=json_decode($curlResponse);
+			$messageId=$curlJson->data->messageIDs[0];
+
+			$messageId='6299e54f758e0a8ab4e3d52c';
+			$url=$whatsappApiUrl."campaignStatus?token=".$instance."&msg_id=".$messageId;
+			$this->curl->create($url);
+			$curlResponse = $this->curl->execute();
+			print($curlResponse);
+			//print($curlJson->data->messageIDs[0]);
+			#print_r($curlJson['data']);*/
+		}
+
+		//https://enotify.app/api/sendText?token=<token>&phone=<Phone>&message=aaa
+		
+		if(!empty($_FILES['wa_file']['name'])){ 
+			//$filesCount = count($_FILES['wa_file']['name']); 
+			//for($i = 0; $i < $filesCount; $i++){ 
+				$_FILES['file']['name']     	= $_FILES['wa_file']['name']; 
+				$_FILES['file']['type']     	= $_FILES['wa_file']['type']; 
+				$_FILES['file']['tmp_name'] 	= $_FILES['wa_file']['tmp_name']; 
+				$_FILES['file']['error']     	= $_FILES['wa_file']['error']; 
+				$_FILES['file']['size']     	= $_FILES['wa_file']['size']; 
+				
+				$config['upload_path'] = 'uploads/wafiles';
+				$config['allowed_types'] = '*';
+				$config['file_name'] = $_FILES['wa_file']['name'];
+				
+				$this->load->library('upload',$config);
+				$this->upload->initialize($config);
+									 
+				// Upload file to server 
+				if($this->upload->do_upload('file')){                       
+					$uploadData = $this->upload->data();
+					$filename = $uploadData['file_name'];   
+					//$bank_file[] = $filename; 
+					$attachfile = getcwd().'/uploads/wafiles/'.$filename;
+					//print "$attachfile";
+					$attachmentUrl=base_url('').'uploads/wafiles/'.$filename;
+					$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
+					echo $urlpdf;
+					$this->curl->create($urlpdf);				
+					#$dataCurl = $this->curl->execute();
+				} 
+			//}
+		}
+	}
+
+	public function sendWhatsAppDispatchNote(){
+		$instance= $this->config->item('WhatsappInstanceID');
+		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
+		$message =trim($this->input->post('wa_message'));
+		$message=urlencode($message);
+		$challan_id = $this->input->post('wa_challan_id');
+		
+		
+		$order_id = $this->db->get_where('challan', array('challan_id' => $challan_id))->row()->order_id;
+		$data=Array();		
+		$customerInfo = $this->order_model->getCustomerByOrderId($order_id);
+		
+		$uid=$this->db->get_where('challan', array('challan_id' => $challan_id))->row()->challan_pdf_id;
+		print $uid."-->".$challan_id;
+		#$customerInfo->code='91';
+		#$customerInfo->mobile='9451738701';
+		$number=$customerInfo->code.$customerInfo->mobile;
+		$number = preg_replace( '/\D+/is', '', $number);
+
+		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
+		echo $url;
+		$this->curl->create($url);
+		#$curlResponse = $this->curl->execute();
+
+		//Hardcoded for testing need to remove.
+		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
+
+		if($customerInfo->wa_status =='P'){
+			/*$curlJson=json_decode($curlResponse);
+			$messageId=$curlJson->data->messageIDs[0];
+
+			$messageId='6299e54f758e0a8ab4e3d52c';
+			$url=$whatsappApiUrl."campaignStatus?token=".$instance."&msg_id=".$messageId;
+			$this->curl->create($url);
+			$curlResponse = $this->curl->execute();
+			print($curlResponse);
+			//print($curlJson->data->messageIDs[0]);
+			#print_r($curlJson['data']);*/
+		}
+
+		//https://enotify.app/api/sendText?token=<token>&phone=<Phone>&message=aaa
+		 
+		if(!empty($this->input->post('pdf_check'))){
+			if($this->input->post('pdf_check')==1){
+				$attachmentUrl=site_url('attachements').'/downloadDispatchNote/'.$uid;
+				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
+				echo $urlpdf;
 				$this->curl->create($urlpdf);				
 				#$dataCurl = $this->curl->execute();
 			}
@@ -197,7 +424,7 @@ class Common extends CI_Controller {
 					$filename = $uploadData['file_name'];   
 					//$bank_file[] = $filename; 
 					$attachfile = getcwd().'/uploads/emails/'.$filename;
-					print "$attachfile";
+					//print "$attachfile";
 					$this->email->attach($attachfile);	
 				} 
 			}

@@ -269,6 +269,8 @@ class Order extends CI_Controller {
 						//'advice_total' 			=> $advicesTotal,
 						'advice_total' 			=> number_format((float)($order['total_advice_payment']), 2, '.', ''),
 						'order_date' 			=> $order['order_date'],		
+						'wa_status' 			=> $order['wa_status'],		
+						'mobile' 				=> $order['mobile'],		
 						//'totalChallanQty' 		=> $order['challan_qty'],		
 						'totalOrderProduct' 	=> $totOrdQty		
 					);
@@ -288,13 +290,14 @@ class Order extends CI_Controller {
 					'order_total' 			=> number_format((float)($orderTotal), 2, '.', ''),
 					//'advice_total' 			=> $advicesTotal,
 					'advice_total' 			=> number_format((float)($order['total_advice_payment']), 2, '.', ''),
-					'order_date' 			=> $order['order_date'],		
+					'order_date' 			=> $order['order_date'],	
+					'wa_status' 			=> $order['wa_status'],		
+					'mobile' 				=> $order['mobile'],	
 					//'totalChallanQty' 		=> $order['challan_qty'],		
 					'totalOrderProduct' 	=> $totOrdQty		
 				);				
 			}
 		}		
-		
 		
 		$data['model']=$this->input->get('model');
 		$this->load->view('common/header');

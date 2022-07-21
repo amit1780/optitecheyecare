@@ -13,7 +13,7 @@ class Order_model extends CI_Model {
 	
 	public function  saveOrder($data){
 		
-		 $this->db->select('store_id,customer_name,customer_id,contact_person,contact_email,contact_phone,contact_fax,user_id,currency_id,bank_id,billing_details,shipping_details,delivery,insurance,terms_conditions,payment_terms,discount_type,pan_no,gst,special_instruction,created_by');
+		$this->db->select('store_id,customer_name,customer_id,contact_person,contact_email,contact_phone,contact_fax,user_id,currency_id,bank_id,billing_details,shipping_details,delivery,insurance,terms_conditions,payment_terms,discount_type,pan_no,gst,special_instruction,created_by');
 		$this->db->from('quote_customer');
 		$this->db->where('id', $data['quotation_id']);
 		$query = $this->db->get();
@@ -30,6 +30,7 @@ class Order_model extends CI_Model {
 			'freight_gst' 	=> $this->config->item('PER_FREIGHT_GST'),
 			'order_date'		=> date('Y-m-d H:i:s'),
 			'status'			=> 'Y',
+			'order_pdf_id' 		=> md5($customer_id.uniqid()),
 			'date_added'		=> date('Y-m-d H:i:s')
 		);
 		
@@ -501,6 +502,25 @@ class Order_model extends CI_Model {
 		$this->db->where('id', $bank_id);
 		$query = $this->db->get();
 		return $query->row();		
+	}
+
+	public function getCustomerByOrderId($order_id) {		
+		
+		$this->db->select('oc.customer_id');
+		$this->db->select('oc.order_pdf_id');
+		$this->db->select('c.mobile,co.code,c.wa_status');
+		$this->db->from('order_customer oc ');
+
+		$this->db->join('customer c', 'c.customer_id = oc.customer_id', 'left');
+		$this->db->join('country co', 'co.country_id = c.country_id', 'left');
+
+		$this->db->where('oc.order_id', $order_id);
+					
+		$query = $this->db->get();
+		//echo $this->db->last_query();exit;
+		//print_r($query->result_array());exit;
+		return $query->row();
+		#return $query->result_array();
 	}
 	
 	public function getCustomerById($customer_id){

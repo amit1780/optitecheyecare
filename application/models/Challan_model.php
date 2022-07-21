@@ -44,6 +44,7 @@ class Challan_model extends CI_Model {
 			'created_by'			=> $_SESSION['user_id'],
 			'stock_transfer'		=> $stock_transfer,
 			'freight_gst' 			=> $this->config->item('PER_FREIGHT_GST'),
+			'challan_pdf_id' 			=> md5($data['customer_id'].uniqid()),
 			'date_added'			=> date('Y-m-d H:i:s')
 		);
 		
