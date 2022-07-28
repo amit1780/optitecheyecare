@@ -229,7 +229,7 @@ class Customer_model extends CI_Model {
 	}
 	
 	public function getCustomerById($customer_id) {		
-		$this->db->select('*, (SELECT sli_name FROM svi_sli WHERE sli_id = svi_customer.sli_id) as sli_name')
+		$this->db->select('*, (SELECT sli_name FROM svi_sli WHERE sli_id = svi_customer.sli_id) as sli_name, (SELECT code FROM svi_country WHERE country_id = svi_customer.country_id) as code')
             ->from('customer');
 		$this->db->where('customer_id', $customer_id);	
 		$query = $this->db->get();

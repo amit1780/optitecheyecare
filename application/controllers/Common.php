@@ -94,7 +94,7 @@ class Common extends CI_Controller {
 		$message=urlencode($message);
 		$quotation_id = $this->input->post('quotation_id');
 		
-		
+		#$instance='627a19f3f9e0425ac1e33ab6';
 		$data=Array();		
 		$customerInfo = $this->quotation_model->getCustomerByQuotationId($quotation_id);
 		
@@ -107,7 +107,7 @@ class Common extends CI_Controller {
 		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
 		#echo $url;
 		$this->curl->create($url);
-		#$curlResponse = $this->curl->execute();
+		$curlResponse = $this->curl->execute();
 
 		//Hardcoded for testing need to remove.
 		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
@@ -125,7 +125,7 @@ class Common extends CI_Controller {
 			#print_r($curlJson['data']);*/
 		}
 
-		//https://enotify.app/api/sendText?token=<token>&phone=<phone>&message=aaa
+		//https://enotify.app/api/sendText?token=627a19f3f9e0425ac1e33ab6&phone=919451738701&message=aaa
 		 
 		if(!empty($this->input->post('pdf_check'))){
 			if($this->input->post('pdf_check')==1){
@@ -133,7 +133,7 @@ class Common extends CI_Controller {
 				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
 				#echo $urlpdf;
 				$this->curl->create($urlpdf);				
-				#$dataCurl = $this->curl->execute();
+				$dataCurl = $this->curl->execute();
 			}
 		}
 	}
@@ -145,7 +145,7 @@ class Common extends CI_Controller {
 		$message=urlencode($message);
 		$order_id = $this->input->post('wa_order_id');
 		
-		
+		#$instance='627a19f3f9e0425ac1e33ab6';
 		$data=Array();		
 		$customerInfo = $this->order_model->getCustomerByOrderId($order_id);
 		
@@ -156,9 +156,9 @@ class Common extends CI_Controller {
 		$number = preg_replace( '/\D+/is', '', $number);
 
 		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
-		echo $url;
+		#echo $url;
 		$this->curl->create($url);
-		#$curlResponse = $this->curl->execute();
+		$curlResponse = $this->curl->execute();
 
 		//Hardcoded for testing need to remove.
 		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
@@ -176,15 +176,15 @@ class Common extends CI_Controller {
 			#print_r($curlJson['data']);*/
 		}
 
-		//https://enotify.app/api/sendText?token=<>&phone=<>&message=aaa
+		//https://enotify.app/api/sendText?token=627a19f3f9e0425ac1e33ab6&phone=919451738701&message=aaa
 		 
 		if(!empty($this->input->post('pdf_check'))){
 			if($this->input->post('pdf_check')==1){
 				$attachmentUrl=site_url('attachements').'/downloadOrder/'.$uid;
 				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
-				echo $urlpdf;
+				#echo $urlpdf;
 				$this->curl->create($urlpdf);				
-				#$dataCurl = $this->curl->execute();
+				$dataCurl = $this->curl->execute();
 			}
 		}
 	}
@@ -196,7 +196,7 @@ class Common extends CI_Controller {
 		$message=urlencode($message);
 		$challan_id = $this->input->post('wa_challan_id');
 		
-		
+		#$instance='627a19f3f9e0425ac1e33ab6';
 		$order_id = $this->db->get_where('challan', array('challan_id' => $challan_id))->row()->order_id;
 		$data=Array();		
 		$customerInfo = $this->order_model->getCustomerByOrderId($order_id);
@@ -208,9 +208,9 @@ class Common extends CI_Controller {
 		$number = preg_replace( '/\D+/is', '', $number);
 
 		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
-		echo $url;
+		#echo $url;
 		$this->curl->create($url);
-		#$curlResponse = $this->curl->execute();
+		$curlResponse = $this->curl->execute();
 
 		//Hardcoded for testing need to remove.
 		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
@@ -228,19 +228,20 @@ class Common extends CI_Controller {
 			#print_r($curlJson['data']);*/
 		}
 
-		//https://enotify.app/api/sendText?token=<>&phone=<>&message=aaa
+		//https://enotify.app/api/sendText?token=627a19f3f9e0425ac1e33ab6&phone=919451738701&message=aaa
 		 
 		if(!empty($this->input->post('pdf_check'))){
 			if($this->input->post('pdf_check')==1){
 				$attachmentUrl=site_url('attachements').'/downloadChallan/'.$uid;
 				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
-				echo $urlpdf;
+				#echo $urlpdf;
 				$this->curl->create($urlpdf);				
-				#$dataCurl = $this->curl->execute();
+				$dataCurl = $this->curl->execute();
 			}
 		}
 	}
-
+	
+	
 	public function sendWhatsAppCustomer(){
 		$instance= $this->config->item('WhatsappInstanceID');
 		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
@@ -252,14 +253,14 @@ class Common extends CI_Controller {
 		$data=Array();		
 		$customerInfo = $this->customer_model->getCustomerById($customer_id);
 		
-		#$customerInfo->mobile='9919113035';
+		#$customerInfo->mobile='919919113035';
 		$number=$customerInfo->code.$customerInfo->mobile;
 		$number = preg_replace( '/\D+/is', '', $number);
 
 		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
-		echo $url;
+		//echo $url;
 		$this->curl->create($url);
-		#$curlResponse = $this->curl->execute();
+		$curlResponse = $this->curl->execute();
 
 		//Hardcoded for testing need to remove.
 		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
@@ -304,9 +305,9 @@ class Common extends CI_Controller {
 					//print "$attachfile";
 					$attachmentUrl=base_url('').'uploads/wafiles/'.$filename;
 					$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
-					echo $urlpdf;
+					//echo $urlpdf;
 					$this->curl->create($urlpdf);				
-					#$dataCurl = $this->curl->execute();
+					$dataCurl = $this->curl->execute();
 				} 
 			//}
 		}
@@ -319,7 +320,7 @@ class Common extends CI_Controller {
 		$message=urlencode($message);
 		$challan_id = $this->input->post('wa_challan_id');
 		
-		
+		#$instance='627a19f3f9e0425ac1e33ab6';
 		$order_id = $this->db->get_where('challan', array('challan_id' => $challan_id))->row()->order_id;
 		$data=Array();		
 		$customerInfo = $this->order_model->getCustomerByOrderId($order_id);
@@ -332,9 +333,9 @@ class Common extends CI_Controller {
 		$number = preg_replace( '/\D+/is', '', $number);
 
 		$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
-		echo $url;
+		#echo $url;
 		$this->curl->create($url);
-		#$curlResponse = $this->curl->execute();
+		$curlResponse = $this->curl->execute();
 
 		//Hardcoded for testing need to remove.
 		#$curlResponse='{"status":"success","message":"00-Success","data":{"connStatus":true,"messageIDs":["6299e54f758e0a8ab4e3d52c"]},"responsetime":0.002160518}';
@@ -352,15 +353,15 @@ class Common extends CI_Controller {
 			#print_r($curlJson['data']);*/
 		}
 
-		//https://enotify.app/api/sendText?token=<token>&phone=<Phone>&message=aaa
+		//https://enotify.app/api/sendText?token=627a19f3f9e0425ac1e33ab6&phone=919451738701&message=aaa
 		 
 		if(!empty($this->input->post('pdf_check'))){
 			if($this->input->post('pdf_check')==1){
 				$attachmentUrl=site_url('attachements').'/downloadDispatchNote/'.$uid;
 				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$attachmentUrl;
-				echo $urlpdf;
+			    #echo $urlpdf;
 				$this->curl->create($urlpdf);				
-				#$dataCurl = $this->curl->execute();
+				$dataCurl = $this->curl->execute();
 			}
 		}
 	}
@@ -424,7 +425,7 @@ class Common extends CI_Controller {
 					$filename = $uploadData['file_name'];   
 					//$bank_file[] = $filename; 
 					$attachfile = getcwd().'/uploads/emails/'.$filename;
-					//print "$attachfile";
+					print "$attachfile";
 					$this->email->attach($attachfile);	
 				} 
 			}
