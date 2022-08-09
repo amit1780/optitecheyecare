@@ -931,4 +931,82 @@ class Customer extends CI_Controller {
 		$results = $this->customer_model->getChallanPaymentStatus($challan_id);
 		echo json_encode($results);
 	}
+	public function importContacts(){
+		
+		$fileContent = file_get_contents(base_url()."uploads/temp/customers.csv");
+		$counter=1;
+  		while(preg_match("/(.*?)\n/is",$fileContent,$matcher)){
+			$fileContent=$this->after($matcher[0],$fileContent);
+			$customerData=preg_split("/\t/is",$matcher[1]);
+			if(empty(trim($customerData[3])) && empty(trim($customerData[4]))){
+				continue;
+			}
+			$addNewCustomer=true;
+			if(!empty(trim($customerData[3]))){
+				$data=$this->db->get_where('customer', array('mobile' => $customerData[3]))->row()->customer_id;
+				if($data){
+					$addNewCustomer=false;
+				}
+			}
+			if(!empty(trim($customerData[4]))){
+				$data=$this->db->get_where('customer', array('email' => $customerData[4]))->row()->customer_id;
+				if($data){
+					$addNewCustomer=false;
+				}
+			}
+			if($addNewCustomer){
+				$customerData[1]=preg_replace('/Dr\W/is','',$customerData[1]);
+				/*$customerData[1]=preg_replace('/(\W)/is',"$1 ",$customerData[1]);
+				$customerData[1]=ucwords(strtolower(trim($customerData[1])));
+				$customerData[1]=preg_replace('/(\W)\s/is',"$1",$customerData[1]);*/
+				$customerData[1]=SVI_ucwords($customerData[1]);
+				$address1=SVI_ucwords($customerData[5]);
+				$address2=SVI_ucwords($customerData[6]." ".$customerData[7]);
+				
+				$dataToInsert=Array(
+					'contact_person'=>$customerData[1],
+					'mobile'=>$customerData[3],
+					'email'=>$customerData[4],
+					'address_1'=>$address1,
+					'address_2'=>$address2,
+					'country_id'=>'99',
+					'state_id'=>$customerData[11],
+					'city'=>SVI_ucwords($customerData[8]),
+					'pin'=>$customerData[10],
+					'bulk_import'=>'Y',
+					'date_added' => date('Y-m-j H:i:s'),
+					'person_title'=>'Dr'
+
+				);
+				$this->db->insert('customer', $dataToInsert);
+			}
+			$counter++;
+			print $counter."-->".$customerData[1]."<br>";
+		}
+
+	}
+
+	private function before ($inthis, $inthat){
+		return substr($inthat, 0, strpos($inthat, $inthis));
+	} 	
+
+	private function between ($inthis, $that, $inthat){
+		return $this->before($that, $this->after($inthis, $inthat));
+	}
+
+	public function after ($inthis, $inthat){
+		if (!is_bool(strpos($inthat, $inthis)))
+		return substr($inthat, strpos($inthat,$inthis)+strlen($inthis));
+	}
+	private function removeSpaces($str){
+		$str=preg_replace('/<.*?>/is','',$str);
+ 		$str=preg_replace('/^\s+/is',"",$str);
+ 		$str=preg_replace('/\s+/is'," ",$str);
+ 		$str=preg_replace('/\s+$/is',"",$str);
+ 		$str=preg_replace("/\n/"," ",$str);
+ 		$str=preg_replace("/\r/"," ",$str);
+ 		$str=preg_replace("/\t/"," ",$str);
+ 		#$str=preg_replace("/'$/","",$str);
+ 		return $str;
+	}
 }

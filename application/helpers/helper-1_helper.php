@@ -272,4 +272,14 @@ if(!function_exists('SVI_Get_Query_string')){
 	}
 }
 
+if(!function_exists('SVI_ucwords')){
+	function SVI_ucwords($str)
+	{
+		$str=preg_replace('/(\W)/is',"$1 ",$str);
+		$str=ucwords(strtolower(trim($str)));
+		$str=preg_replace('/(\W)\s/is',"$1",$str);
+		return $str;				
+	}
+}
+
 ?>

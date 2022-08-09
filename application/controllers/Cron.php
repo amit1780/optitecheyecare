@@ -7,6 +7,8 @@ class Cron extends CI_Controller {
 		parent::__construct();		
 		$this->load->helper(array('url'));
 		$this->load->model('cron_model');				
+		$this->load->model('bulkmessage_model');
+		$this->load->library('curl');
 	}
 	
 	public function index()
@@ -54,4 +56,50 @@ class Cron extends CI_Controller {
 		
 		$this->email->send();
 	}
+	public function sendWaMsg() {
+		
+		(int)$hour=date('H');
+		#print $hour;
+		if($hour<9 || $hour>18){
+			#print " Break";
+			return false;
+			exit;
+		}
+		$rows=$this->bulkmessage_model->getWaMsgList();
+		/*print "<pre>";
+		print_r($rows);
+		exit;*/
+		foreach($rows as $row){
+			$instance= $this->config->item('WhatsappInstanceID');
+			$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
+			$message =trim($row['message']);
+			$message=urlencode($message);
+			$number=$row['wa_mobile'];
+			
+
+			$url=$whatsappApiUrl.'sendText?token='.$instance.'&phone='.$number.'&message='.$message;
+			//echo $url;
+			$this->curl->create($url);
+			$curlResponse = $this->curl->execute();
+			
+			$curlJson=json_decode($curlResponse);
+			$messageId=$curlJson->data->messageIDs[0];
+				
+			$dataToupdate = array(
+				'status'   		=> 'C',
+				'ref_number'	=> $messageId,
+				'send_date'		=> date('Y-m-j H:i:s')
+			);					
+			$this->db->where('id', $row['id'] );
+			$this->db->update('whatsapp_schedule', $dataToupdate);
+
+			if(!empty($row['file_name'])){
+				$urlpdf=$whatsappApiUrl.'sendFiles?token='.$instance.'&phone='.$number.'&link='.$row['file_name'];
+				//echo $urlpdf;
+				$this->curl->create($urlpdf);				
+				$dataCurl = $this->curl->execute();				
+			}
+		}
+       
+    }
 }

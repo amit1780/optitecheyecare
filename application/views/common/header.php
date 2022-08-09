@@ -138,7 +138,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="dropdown-menu" aria-labelledby="pagesDropdown">				
 				<a class="dropdown-item" href="<?php echo site_url('customer');?>">Customer List</a>
 				<a class="dropdown-item" href="<?php echo site_url('addCustomer');?>">Add Customer</a>
-				<a class="dropdown-item" href="<?php echo site_url('bulkMessage');?>">Bulk Message</a>
+				<a class="dropdown-item" href="<?php echo site_url('bulkmessage');?>">Bulk Message</a>
 			</div>
         </li>
 		
