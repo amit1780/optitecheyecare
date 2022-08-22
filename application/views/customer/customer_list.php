@@ -3,7 +3,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <div class="container-fluid">	
 	<div class="page_heading">
-		<h1 style="float: left;"><?php echo $page_heading; ?></h1> <?php echo $this->breadcrumbs->show(); ?>			
+		<div class="row">
+			<div class="col-sm-6">	
+			<h1 style="float: left;"><?php echo $page_heading; ?></h1> <?php echo $this->breadcrumbs->show(); ?>			
+			</div> 
+			<?php $queryString=SVI_Get_Query_string(); ?>
+			<div class="col-sm-6">
+				<div class="float-right">
+					<button type="button" id="create_excel" class="btn btn-primary" title="Create Excel File"><i class="far fa-file-excel"></i></button>&nbsp; 
+					<a href="<?php echo site_url('customer/customerListDownload')."?".$queryString; ?>" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Download"><i class="fas fa-download"></i></a> &nbsp; 
+					
+				</div>
+			</div> 
+		</div> 		
 	</div>
 	
     <?php if(isset($success)){ ?>
@@ -205,7 +217,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											echo"<i class='fab fa-whatsapp-square text-warning'></i>";
 										}elseif($customer['wa_status']=='I'){
 											echo"<i class='fab fa-whatsapp-square text-danger'></i>";
-										}elseif($customer['wa_status']=='C'){
+										}elseif($customer['wa_status']=='V'){
 											echo"<i class='fab fa-whatsapp-square text-success'></i>";
 										}										
 									?>
@@ -529,5 +541,13 @@ $(document).ready(function(){
 		}		
 		location = url; 
 	});
+
+	$('#create_excel').click(function(){  
+		var base_url = '<?php echo site_url(); ?>';
+		var qry_string='<?php echo SVI_Get_Query_string(); ?>';
+		var excel_data = $('#searchResponce').html();  
+		var urlll = base_url +"/customer/downloadContactsExcel?"+qry_string;	
+		window.location = urlll;		
+	}); 
 }); 
 </script> 

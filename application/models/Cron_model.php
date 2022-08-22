@@ -28,5 +28,31 @@ class Cron_model extends CI_Model {
 		$query = $this->db->get();		
 		return $query->result_array();
 	}
-	
+
+	public function getPendingWaCustomersBulk(){
+		$this->db->select('ws.*,c.wa_status as customer_wa_status');
+		$this->db->from('whatsapp_schedule ws');
+		$this->db->join('customer c', 'c.customer_id = ws.customer_id', 'left');
+		#$this->db->where('c.wa_status','P');
+		$this->db->where('ws.wa_status','P');
+		//$this->db->where('ws.id','650');
+		$this->db->where("ws.ref_number!=''");
+		#$this->db->order_by('date_added',"DESC");	
+		$this->db->limit( 200, 0 );			
+		$query = $this->db->get();		
+		return $query->result_array();
+	}
+	public function getPendingWaCustomers(){
+		$this->db->select('ws.*,c.wa_status as customer_wa_status');
+		$this->db->from('whatsapp_status ws');
+		$this->db->join('customer c', 'c.customer_id = ws.customer_id', 'left');
+		#$this->db->where('c.wa_status','P');
+		$this->db->where('ws.wa_status','P');
+		//$this->db->where('ws.id','650');
+		$this->db->where("ws.ref_number!=''");
+		#$this->db->order_by('date_added',"DESC");	
+		$this->db->limit( 200, 0 );			
+		$query = $this->db->get();		
+		return $query->result_array();
+	}	
 }

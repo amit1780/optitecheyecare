@@ -308,7 +308,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					  <th width="12%">Order Total</th>
 					  <th width="10%">Payment Received</th>
 					   
-					  <th>Action</th>
+					  <th width="13%">Action</th>
 					 </tr>
 				  </thead>
 			  <tbody>
@@ -367,7 +367,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											echo"<i class='fab fa-whatsapp-square text-warning'></i>";
 										}elseif($order['wa_status']=='I'){
 											echo"<i class='fab fa-whatsapp-square text-danger'></i>";
-										}elseif($order['wa_status']=='C'){
+										}elseif($order['wa_status']=='V'){
 											echo"<i class='fab fa-whatsapp-square text-success'></i>";
 										}										
 									?>

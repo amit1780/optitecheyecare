@@ -64,9 +64,19 @@ class Bulkmessage extends CI_Controller {
 	public function scheduleWA(){
 		
 		$formData=$this->input->post();
+		
 		if(empty($formData['schedule_date'])){
 			$formData['schedule_date']=date('Y-m-d');
 		}
+		$subject='';
+		$messageType='W';
+		$message=trim($formData['wa_message']);
+		if(!empty($formData['messageType']) && $formData['messageType']=='email'){
+			$messageType='E';
+			$subject=trim($formData['email_subject']);
+			$message=$formData['email_message'];
+		}
+
 		$attachmentUrl='';
 		$success=false;
 		
@@ -97,8 +107,10 @@ class Bulkmessage extends CI_Controller {
 		}
 
 		$messageData = array(
-			'message'   		=> $formData['wa_message'],
+			'message'   		=> $message,
 			'file_name'			=> $attachmentUrl,
+			'message_type'		=> $messageType,
+			'subject'			=> $subject,
 			'added_by'			=> $_SESSION['user_id']
 		);
 		$this->db->insert('wa_messages', $messageData);
@@ -109,20 +121,40 @@ class Bulkmessage extends CI_Controller {
 			foreach($customers as $customer){
 				if(!empty($customer)){
 					$customerInfo=$this->customer_model->getCustomerById($customer);
-					$customerInfo->mobile=preg_replace( '/\D+/is', '', $customerInfo->mobile);
-					$customerInfo->code=preg_replace( '/\D+/is', '', $customerInfo->code);
-					if(!empty($customerInfo->mobile)){
-						$number=$customerInfo->code.$customerInfo->mobile;
-						$uid=$this->db->get_where('whatsapp_schedule', array('msg_id' => $msgId,'wa_mobile' => $number))->row()->id;
-						if(empty($uid)){
-							$customerData = array(
-								'customer_id' => $customer,
-								'msg_id' => $msgId,
-								'wa_mobile' => $number,
-								'scheduled_date' => $formData['schedule_date']
-							);
-							$this->db->insert('whatsapp_schedule', $customerData);
-							$success=true;
+					if($messageType=='E'){
+						$customerInfo->mobile=preg_replace( '/\D+/is', '', $customerInfo->mobile);
+						$customerInfo->code=preg_replace( '/\D+/is', '', $customerInfo->code);
+						if(!empty($customerInfo->email)){
+							$email=$customerInfo->email;
+							$uid=$this->db->get_where('email_schedule', array('msg_id' => $msgId,'email' => $email))->row()->id;
+							if(empty($uid)){
+								$customerData = array(
+									'customer_id' => $customer,
+									'msg_id' => $msgId,
+									'email' => $email,
+									'scheduled_date' => $formData['schedule_date'],
+									'added_by' =>  $_SESSION['user_id']
+								);
+								$this->db->insert('email_schedule', $customerData);
+								$success=true;
+							}
+						}
+					}else{
+						$customerInfo->mobile=preg_replace( '/\D+/is', '', $customerInfo->mobile);
+						$customerInfo->code=preg_replace( '/\D+/is', '', $customerInfo->code);
+						if(!empty($customerInfo->mobile)){
+							$number=$customerInfo->code.$customerInfo->mobile;
+							$uid=$this->db->get_where('whatsapp_schedule', array('msg_id' => $msgId,'wa_mobile' => $number))->row()->id;
+							if(empty($uid)){
+								$customerData = array(
+									'customer_id' => $customer,
+									'msg_id' => $msgId,
+									'wa_mobile' => $number,
+									'scheduled_date' => $formData['schedule_date']
+								);
+								$this->db->insert('whatsapp_schedule', $customerData);
+								$success=true;
+							}
 						}
 					}
 				}

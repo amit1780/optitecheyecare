@@ -269,10 +269,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<br>
 				</div>			
 			</div> 	
-		</form>
-		
-		<br>
-	
+		</form>		
+		<br>	
 	  <div class="table-responsive">
 		<style>
 			table thead th.sort_ASC a:after {
@@ -280,15 +278,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				color:black !important;
 				font-size: 12px !important;
 				padding: 15px !important;
-			}
-			
+			}			
 			table thead th.sort_DESC a:after {
 				content: "▼" !important;
 				color:black !important;
 				font-size: 12px !important;
 				padding: 15px !important;
-			}
-			
+			}			
 			.disabled {			  
 			  opacity: 0.55;
 			}
@@ -296,7 +292,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<table class="table-sm table-bordered" width="100%" cellspacing="0">
 			  <thead>
 				<tr>
-				  <th>Challan&nbsp;No</th>
+				  <th >Challan&nbsp;No</th>
 				  <th>Order&nbsp;No</th>
 				  
 				  <th <?php if($this->input->get('order') && ($this->input->get('sort') == 'customer_name')){ echo 'class=sort_'.$this->input->get('order'); } else { echo ''; } ?> ><a href="<?php echo $customer_name_sort; ?>">Customer Name</a></th>
@@ -306,15 +302,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				   <th <?php if($this->input->get('order') && ($this->input->get('sort') == 'docket_no')){ echo 'class=sort_'.$this->input->get('order'); } else { echo ''; } ?> ><a href="<?php echo $docket_no_sort; ?>">Docket No</a></th>
 				  
 				  <th>Invoice No</th>				  
-				  <th>Contact No</th>
-				  
+				  <th>Contact No</th>				  
 				  <th <?php if($this->input->get('order') && ($this->input->get('sort') == 'country_name')){ echo 'class=sort_'.$this->input->get('order'); } else { echo ''; } ?> ><a href="<?php echo $country_sort; ?>">Country</a></th>
-				  
 				  <th <?php if($this->input->get('order') && ($this->input->get('sort') == 'state_name')){ echo 'class=sort_'.$this->input->get('order'); } else { echo ''; } ?> ><a href="<?php echo $state_sort; ?>">State</a></th>
-				  
 				  <th width="9%">Challan Total</th>
 				  <th width="8%">Challan Date</th>
-				  <th style="width:12%;">Action</th>
+				  <th width="12%">Action</th>
 				 </tr>
 			  </thead>
 		  <tbody>
@@ -382,7 +375,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											echo"<i class='fab fa-whatsapp-square text-warning'></i>";
 										}elseif($challan['wa_status']=='I'){
 											echo"<i class='fab fa-whatsapp-square text-danger'></i>";
-										}elseif($challan['wa_status']=='C'){
+										}elseif($challan['wa_status']=='V'){
 											echo"<i class='fab fa-whatsapp-square text-success'></i>";
 										}										
 									?>

@@ -57,7 +57,6 @@ class Cron extends CI_Controller {
 		$this->email->send();
 	}
 	public function sendWaMsg() {
-		
 		(int)$hour=date('H');
 		#print $hour;
 		if($hour<9 || $hour>18){
@@ -99,7 +98,177 @@ class Cron extends CI_Controller {
 				$this->curl->create($urlpdf);				
 				$dataCurl = $this->curl->execute();				
 			}
-		}
-       
+		}       
     }
+
+
+	public function sendEmails() {
+
+		/*$config = Array(
+		  //'protocol' => 'smtp', 
+		  'smtp_host' => 'localhost', 
+		  'smtp_port' => '25', 
+		  '_smtp_auth' => 'FALSE', 
+		  'smtp_crypto' => 'false/none', 
+		  'mailtype' => 'html', 
+		  'charset' => 'utf-8',
+		  'wordwrap' => TRUE
+		);
+		$this->load->library('email',$config);
+		
+		$admin_email = $this->config->item('admin_email');
+		$this->email->from($admin_email, 'Optitech Eye Care');
+		$this->email->to('arunpandey1985@gmail.com');
+		
+		$this->email->subject('Cron Email'.date('Y-m-j H:i:s'));
+		$this->email->message(date('Y-m-j H:i:s'));	 
+			
+		$this->email->send();
+		
+		exit;
+		*/
+
+		/* delete above code on live */
+
+
+
+		/*(int)$hour=date('H');
+		#print $hour;
+		if($hour<9 || $hour>18){
+			#print " Break";
+			#return false;
+			#exit;
+		}*/
+		$totalSendToday=$this->bulkmessage_model->getTotalEmailsSentToday();
+		if($totalSendToday->totalSent>=300){
+			#print " Break";
+			return false;
+			exit;
+		}
+		$rows=$this->bulkmessage_model->getEmailMsgList();
+		$config = Array(
+		  //'protocol' => 'smtp', 
+		  'smtp_host' => 'localhost', 
+		  'smtp_port' => '25', 
+		  '_smtp_auth' => 'FALSE', 
+		  'smtp_crypto' => 'false/none', 
+		  'mailtype' => 'html', 
+		  'charset' => 'utf-8',
+		  'wordwrap' => TRUE
+		);
+		$this->load->library('email',$config);
+		foreach($rows as $row){
+			
+			
+			$admin_email = $this->config->item('admin_email');
+			$replyto_email = $this->config->item('replyto_email');
+			$copy_email = $this->config->item('copy_email');
+					
+			$to = $row['email'];
+			$subject = $row['subject'];
+			$message = $row['message'];
+			
+			$this->email->from($admin_email, 'Optitech Eye Care');
+			$this->email->to($to);
+			
+			//$this->email->cc($email_cc);
+			$this->email->bcc($copy_email);		
+
+			$this->email->subject($subject);
+			$this->email->message($message);		
+		   
+			#$attachfile = getcwd().'/'.$challan_file;
+			$this->email->attach($row['file_name']);		
+			$this->email->send();
+			$dataToupdate=Array(
+				'send_date'=>date('Y-m-j H:i:s'),
+				'status'=>'C'
+			);
+			$this->db->where('id', $row['id'] );
+			$this->db->update('email_schedule', $dataToupdate);
+		}       
+    }
+
+	public function chkWaStatusSchedule() {
+		$instance= $this->config->item('WhatsappInstanceID');
+		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
+		$customers=$this->cron_model->getPendingWaCustomersBulk();
+		
+		foreach ($customers as $customer){
+			
+			if($customer['customer_wa_status'] !='P'){				
+				$this->db->where('id', $customer['id'] );
+				$this->db->update('whatsapp_schedule', array('wa_status'=>'U'));	
+			}else{
+				
+				$messageId=$customer['ref_number'];
+				$url=$whatsappApiUrl."campaignStatus?token=".$instance."&msg_id=".$messageId;
+				$this->curl->create($url);
+				$curlResponse = $this->curl->execute();
+				$curlJson=json_decode($curlResponse);
+				$dataToupdate=Array();
+				$dataToupdateWaSchedule=Array();
+				$updateData=false;
+				if(!empty($curlJson->data->statusInfo) && $curlJson->data->statusInfo=='Sent'){
+					$dataToupdate['wa_status']='V';				
+					$updateData=true;								
+				}elseif(!empty($curlJson->data->statusInfo) && $curlJson->data->statusInfo=='Failed'){
+					$dataToupdate['wa_status']	= 'I';									
+					$updateData=true;
+				}else{
+					$dataToupdate['wa_status']= 'U';		
+					$updateData=true;	
+				}
+				if($updateData){
+
+					$this->db->where('id', $customer['id'] );
+					$this->db->update('whatsapp_schedule', $dataToupdate);
+
+					$this->db->where('customer_id', $customer['customer_id'] );
+					$this->db->update('customer', $dataToupdate);
+				}				
+			}		
+		}
+	}
+	public function chkWaStatus() {
+		$instance= $this->config->item('WhatsappInstanceID');
+		$whatsappApiUrl= $this->config->item('WhatsappBaseURL');
+		$customers=$this->cron_model->getPendingWaCustomers();
+		
+		foreach ($customers as $customer){
+			
+			if($customer['customer_wa_status'] !='P'){				
+				$this->db->where('id', $customer['id'] );
+				$this->db->update('whatsapp_status', array('wa_status'=>'U'));	
+			}else{
+				
+				$messageId=$customer['ref_number'];
+				$url=$whatsappApiUrl."campaignStatus?token=".$instance."&msg_id=".$messageId;
+				$this->curl->create($url);
+				$curlResponse = $this->curl->execute();
+				$curlJson=json_decode($curlResponse);
+				$dataToupdate=Array();
+				$dataToupdateWaSchedule=Array();
+				$updateData=false;
+				if(!empty($curlJson->data->statusInfo) && $curlJson->data->statusInfo=='Sent'){
+					$dataToupdate['wa_status']='V';				
+					$updateData=true;								
+				}elseif(!empty($curlJson->data->statusInfo) && $curlJson->data->statusInfo=='Failed'){
+					$dataToupdate['wa_status']	= 'I';									
+					$updateData=true;
+				}else{
+					$dataToupdate['wa_status']= 'U';		
+					$updateData=true;	
+				}
+				if($updateData){
+
+					$this->db->where('id', $customer['id'] );
+					$this->db->update('whatsapp_status', $dataToupdate);
+
+					$this->db->where('customer_id', $customer['customer_id'] );
+					$this->db->update('customer', $dataToupdate);
+				}				
+			}		
+		}
+	}
 }

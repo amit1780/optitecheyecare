@@ -1,6 +1,10 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/vendor/html5-editor/bootstrap-wysihtml5.css" />
+<script src="<?php echo base_url(); ?>assets/vendor/html5-editor/wysihtml5-0.3.0.js"></script>
+<script src="<?php echo base_url(); ?>assets/vendor/html5-editor/bootstrap-wysihtml5.js"></script>
+
 <div class="container-fluid">	
 	<div class="page_heading">
 		<h1 style="float: left;"><?php echo $page_heading; ?></h1> <?php echo $this->breadcrumbs->show(); ?>			
@@ -64,10 +68,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<form name='wa_form' id='wa_form' enctype="multipart/form-data">
 		<div class="card mb-3">	
 			<div class="card-body">	
+			<div class="row">
+				<div class="col-md-9">
+				<input type='radio' name='messageType' id='typeWA' checked value='wa' style='margin-left:5px;'>&nbsp;Whatsapp
+				<input type='radio' name='messageType' id='typeEmail' value='email' style='margin-left:20px;'>&nbsp;Email	
+				</div>	<br>		<br>	
+			</div>
 				<div class="row">
-					<div class="col-md-9">
-					<textarea class="form-control" style="height:180px !important;" rows="7" name="wa_message" id="wa_message" placeholder='Type your message here.'></textarea>
+					<div class="col-md-9" id='col_wa_msg'>
+						<textarea class="form-control" style="height:180px !important;" rows="7" name="wa_message" id="wa_message" placeholder='Type your whatsapp message here.'></textarea>
 					</div>
+					<div class="col-md-9 d-none" id='col_email_msg'>
+						<input type="text" class="form-control" name="email_subject" id="email_subject" value="" placeholder='Email Subject'><br>
+						<textarea name="email_message" id="email_message" class="textarea_editor form-control" rows="15" placeholder="Type your Email message here."></textarea>
+						</div>
 					<div class="col-md-3">
 							<div class="row ">
 								<div class="col-md-12">
@@ -163,17 +177,61 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script>
     $(document).ready(function () {
 		//$('#loader').hide();
+		$('.textarea_editor').wysihtml5({
+			"image": false
+		});
+		$('#typeEmail').click(function(){	
+			$('#col_email_msg').removeClass('d-none');
+			$('#col_wa_msg').addClass('d-none');
+			$("#btn-sendmsg").prop('disabled', false);
+			$("#btn-sendmsg").attr('disabled', false);
+			$("#btn-sendmsg").html('Schedule Email');
+		});
+		$('#typeWA').click(function(){	
+			$('#col_email_msg').addClass('d-none');
+			$('#col_wa_msg').removeClass('d-none');
+			$("#btn-sendmsg").prop('disabled', false);
+			$("#btn-sendmsg").attr('disabled', false);
+			$("#btn-sendmsg").html('Schedule Whatsapp Message');			
+		});
+
 		$(document).on('click','#btn-sendmsg',function(){
-			var msg=$.trim($('#wa_message').val());
-			if(!msg){
-				$('#alert_danger').html('Please type message to be sent');
-				$('#alert_danger').removeClass('d-none');
-				$('#alert_danger').show();
-				setTimeout(function(){
-					$(".alert").hide();			
-				}, 4000);
-				$('#wa_message').val('');
-				return false;
+			var messageType=$.trim($('input[name="messageType"]:checked').val());
+			if(messageType=='wa'){
+				var msg=$.trim($('#wa_message').val());
+				if(!msg){
+					$('#alert_danger').html('Please type message to be sent');
+					$('#alert_danger').removeClass('d-none');
+					$('#alert_danger').show();
+					setTimeout(function(){
+						$(".alert").hide();			
+					}, 4000);
+					$('#wa_message').val('');
+					return false;
+				}
+			}else if(messageType=='email'){
+				var emailMessage=$.trim($('#email_message').val());
+				if(!emailMessage){
+					$('#alert_danger').html('Please type message to be sent');
+					$('#alert_danger').removeClass('d-none');
+					$('#alert_danger').show();
+					setTimeout(function(){
+						$(".alert").hide();			
+					}, 4000);
+					$('#wa_message').val('');
+					return false;
+				}
+				var emailSubject=$.trim($('#email_subject').val());
+				if(!emailSubject){
+					$('#alert_danger').html('Please type Email subject');
+					$('#alert_danger').removeClass('d-none');
+					$('#alert_danger').show();
+					setTimeout(function(){
+						$(".alert").hide();			
+					}, 4000);
+					$('#wa_message').val('');
+					return false;
+				}
 			}
 			var len=0;
 			var allCustomers='';
@@ -272,10 +330,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});	
 
 		$('#customerRecords-select-all').on('click', function(){
-			// Get all rows with search applied
-			var rows = table.rows({ 'search': 'applied' }).nodes();
-			// Check/uncheck checkboxes for all rows in the table
-			$('input[type="checkbox"]', rows).prop('checked', this.checked);
+			
+			$('.chk_contacts').not(this).prop('checked', this.checked);
 		});			
     });    
 </script>

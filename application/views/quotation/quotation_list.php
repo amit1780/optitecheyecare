@@ -308,7 +308,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											echo"<i class='fab fa-whatsapp-square text-warning'></i>";
 										}elseif($quotation['wa_status']=='I'){
 											echo"<i class='fab fa-whatsapp-square text-danger'></i>";
-										}elseif($quotation['wa_status']=='C'){
+										}elseif($quotation['wa_status']=='V'){
 											echo"<i class='fab fa-whatsapp-square text-success'></i>";
 										}										
 									?>

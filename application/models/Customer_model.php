@@ -58,7 +58,8 @@ class Customer_model extends CI_Model {
 		
 		$address_1 = str_replace( ',', '', $data['address_1'] );
 		$address_2 = str_replace( ',', '', $data['address_2'] );
-		
+		$customerData=$this->db->get_where('customer', array('customer_id' => $data['customer_id']))->row();
+
 		$customer_data = array(
 			'company_name'   				=> ucwords(strtolower(trim($data['company_name']))),
 			'person_title'					=> $data['person_title'],
@@ -86,6 +87,12 @@ class Customer_model extends CI_Model {
 			'modifi_user_id' 				=> $_SESSION['user_id'],
 			'date_modified' 				=> date('Y-m-j H:i:s')
 		);	
+
+		if($customerData->mobile !=trim($data['mobile'])){
+			$customer_data['wa_status']='P';
+		}elseif($customerData->country_id !=$data['country_id']){
+			$customer_data['wa_status']='P';
+		}
 			
 		$this->db->where('customer_id', $data['customer_id']);
 		$this->db->update('customer', $customer_data);		
@@ -226,6 +233,64 @@ class Customer_model extends CI_Model {
 		
 		$query = $this->db->get();		 	
 		return $query->num_rows();
+	}
+
+	public function getCustomersDownload($data) {
+		$qryArr=Array();
+		if(!empty($data['customerid'])){
+			$qryArr['customer_id']=$data['customerid'];
+		}
+		if(!empty($data['country_id'])){
+			$qryArr['customer.country_id']=$data['country_id'];
+		}		
+		if(!empty($data['state_id'])){
+			$qryArr['customer.state_id']=$data['state_id'];
+		}	
+		if(!empty($data['email'])){
+			$qryArr['customer.email']=$data['email'];
+		}		
+		if(!empty($data['pin_code'])){
+			$qryArr['customer.pin']=$data['pin_code'];
+		}	
+		$this->db->select('*, country.name as country_name, state.name as state_name, (SELECT SUM(amount) FROM `svi_customer_payment` WHERE customer_id=svi_customer.customer_id) as customer_amount')
+			->from('customer');		
+		$this->db->join('country', 'country.country_id = customer.country_id', 'left');
+		$this->db->join('state', 'state.state_id = customer.state_id', 'left');
+		$this->db->where($qryArr);
+		
+		if(!empty($data['mobile'])){
+			$this->db->group_start();
+			$this->db->where('mobile', $data['mobile']);
+			$this->db->or_where('phone', $data['mobile']);
+			$this->db->group_end();
+		}
+		
+		if(!empty($data['company_name'])){
+			$this->db->group_start();
+				$this->db->like('company_name', trim($data['company_name']));
+				//$this->db->or_like('person_title', trim($data['company_name']));
+				$this->db->or_like('contact_person',trim($data['company_name']));
+			$this->db->group_end();
+		}
+		
+		if(!empty($data['city'])){
+			$this->db->group_start();
+				$this->db->like('city', trim($data['city']));
+				$this->db->or_like('district',trim($data['city']));
+			$this->db->group_end();
+		}
+		
+		#$this->db->limit( $limit, $start );		
+		
+		if($data['order'] && $data['sort']){
+			$this->db->order_by($data['sort'], $data['order']);
+		} else {
+			$this->db->order_by('company_name', 'ASC');
+			$this->db->order_by('contact_person', 'ASC');
+		}		
+		$query = $this->db->get();
+		
+		return $query->result_array();
 	}
 	
 	public function getCustomerById($customer_id) {		

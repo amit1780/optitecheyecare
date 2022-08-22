@@ -214,7 +214,7 @@ class Customer extends CI_Controller {
 			$this->load->view('common/footer');			
 		} else {			
 			$this->customer_model->editCustomer($this->input->post());			
-			$_SESSION['success']      = "Success: You have Added Customer";
+			$_SESSION['success'] = "Success: You have Added Customer";
 			redirect('/customer');			
 		}		
 	}
@@ -892,6 +892,97 @@ class Customer extends CI_Controller {
 		$url = base_url().$pdfFilePath;		
 		redirect($url);	
 		
+	}
+
+	public function downloadContactsExcel() {		
+		// create file name
+        $fileName = 'customerData-'.date('d-m-yy').'.xlsx';
+		// load excel library
+        $this->load->library('excel');
+        
+		$costomers = $this->customer_model->getCustomersDownload($this->input->get());
+		
+		
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->setActiveSheetIndex(0);
+        // set Header
+        $objPHPExcel->getActiveSheet()->SetCellValue('A1', 'Customer ID');
+        $objPHPExcel->getActiveSheet()->SetCellValue('B1', 'Company Name');
+        $objPHPExcel->getActiveSheet()->SetCellValue('C1', 'Contact Person');
+        $objPHPExcel->getActiveSheet()->SetCellValue('D1', 'Email');
+        $objPHPExcel->getActiveSheet()->SetCellValue('E1', 'Mobile');       
+        $objPHPExcel->getActiveSheet()->SetCellValue('F1', 'Address');       
+        $objPHPExcel->getActiveSheet()->SetCellValue('G1', 'Country');       
+        $objPHPExcel->getActiveSheet()->SetCellValue('H1', 'State');       
+        $objPHPExcel->getActiveSheet()->SetCellValue('I1', 'City');       
+        $objPHPExcel->getActiveSheet()->SetCellValue('J1', 'Pin');       
+           
+        
+		$rowCount = 2;	
+		foreach($costomers as $costomer){
+			
+			$objPHPExcel->getActiveSheet()->SetCellValue('A' . $rowCount, $costomer['customer_id']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('B' . $rowCount, $costomer['company_name']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('C' . $rowCount, $costomer['person_title']." ".$costomer['contact_person']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('D' . $rowCount, $costomer['email']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('E' . $rowCount, $costomer['mobile']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('F' . $rowCount, $costomer['address_1']." ".$costomer['address_2']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('G' . $rowCount, $costomer['country_name']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('H' . $rowCount, $costomer['state_name']); 
+			$objPHPExcel->getActiveSheet()->SetCellValue('I' . $rowCount, $costomer['city']); 	
+			$objPHPExcel->getActiveSheet()->SetCellValue('J' . $rowCount, $costomer['pin']); 	
+
+			$rowCount++;		
+		 }
+		
+        $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+		header("Content-Type: application/vnd.ms-excel");
+		header("Content-Disposition: attachment; filename=$fileName");
+        $objWriter->save('php://output');
+		ob_start();
+		$excelOutput = ob_get_clean();
+    }
+
+	public function customerListDownload(){
+		//load mPDF library
+		$this->load->library('m_pdf');
+		//load mPDF library
+		$data['customers'] = $this->customer_model->getCustomersDownload($this->input->get());
+		$data['country_name']='';
+		$data['city']='';
+		$data['state_name']='';
+		if(!empty($this->input->get('city'))){
+			$data['city']=$this->input->get('city');
+		}
+		if(!empty($this->input->get('country_id'))){
+			$data['country_name']=$this->db->get_where('country', array('country_id' => $this->input->get('country_id')))->row()->name;
+		}
+		if(!empty($this->input->get('state_id'))){
+			$data['state_name']=$this->db->get_where('state', array('state_id' => $this->input->get('state_id')))->row()->name;
+		}
+		$html= $this->load->view('customer/customer_list_download', $data,true);
+		
+		//this the the PDF filename that user will get to download
+		//$filename = str_pad($quotation_id, 6, "Q00000", STR_PAD_LEFT);
+		$pdfFilePath = "Customer_list.pdf";
+
+
+		//actually, you can pass mPDF parameter on this load() function
+		$pdf = $this->m_pdf->load();
+		$pdf->SetHTMLHeader('<div style="width:100%;float:left;height:50px;text-align:center;"></div>');
+		$pdf->SetHTMLFooter('<div style="width:100%;float:left;height:50px;text-align:center;"></div>');
+		$pdf->AddPage('L', // L - landscape, P - portrait 
+        '', '', '', '',
+        1, // margin_left
+        1, // margin right
+       5, // margin top
+       5, // margin bottom
+        0, // margin header
+        0); // margin footer
+		$pdf->WriteHTML($html,2);
+		
+		//offer it to user via browser download! (The PDF won't be saved on your server HDD)
+		$pdf->Output($pdfFilePath, "D");
 	}
 	
 	public function addChallanPaymentStatus(){
